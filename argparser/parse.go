@@ -61,7 +61,7 @@ type term struct {
 	Number   *float64 `parser:"| @Float"`
 }
 
-// ParseFields parses "s" based on a the grammer described
+// ParseFields parses "s" based on a the grammar described
 // by "FieldExprs"
 func ParseFields(s string) (*FieldExprs, error) {
 	parser, err := participle.Build(
@@ -81,7 +81,7 @@ func ParseFields(s string) (*FieldExprs, error) {
 	return myAST, nil
 }
 
-// ParseFilters parses "s" based on a the grammer described
+// ParseFilters parses "s" based on a the grammar described
 // by "FilterExprs"
 func ParseFilters(s string) (*FilterExprs, error) {
 	parser, err := participle.Build(&FilterExprs{}, participle.Lexer(customLexer), participle.Unquote(customLexer, "String"))
