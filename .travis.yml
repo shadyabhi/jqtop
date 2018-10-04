@@ -9,7 +9,6 @@ install:
     - go get github.com/alecthomas/participle
 
 go:
-  - 1.7
   - 1.8
   - tip
 
