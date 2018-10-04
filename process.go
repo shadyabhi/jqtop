@@ -55,7 +55,7 @@ func isMatching(line string, filters []filter) bool {
 
 		results = append(results, isMatch)
 
-		logrus.Debugf("isMatching: Filter passed: %+v, line: %s, isMatch: %s", f, line, isMatch)
+		logrus.Debugf("isMatching: Filter passed: %+v, line: %s, isMatch: %t", f, line, isMatch)
 	}
 
 	// Any match, filter the line
