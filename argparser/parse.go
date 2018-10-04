@@ -23,43 +23,47 @@ var customLexer = lexer.Must(lexer.Regexp(
 		`|(?P<Rparen>[\)])`,
 ))
 
+// FieldExprs is used to parse fields
+// Eg: field2(1, 2); field1; f3 = foo(1,2);
 type FieldExprs struct {
-	// field2(1, 2); field1; f3 = foo(1,2);
-	Exprs []*FieldExpr `parser:"{ @@ }"`
+	Exprs []*fieldExpr `parser:"{ @@ }"`
 }
 
-type FieldExpr struct {
-	Assignment *Assignment `parser:" @@ "`
-	Expr       *Expr       `parser:"| @@"`
+type fieldExpr struct {
+	Assignment *assignment `parser:" @@ "`
+	Expr       *expr       `parser:"| @@"`
 }
 
-type Assignment struct {
+type assignment struct {
 	Variable string `parser:"@Ident \"=\""`
-	Expr     *Expr  `parser:"@@"`
+	Expr     *expr  `parser:"@@"`
 }
 
-type Expr struct {
-	Function *Function `parser:"@@"`
-	Term     *Term     `parser:"| @@ { \";\" }"`
+type expr struct {
+	Function *function `parser:"@@"`
+	Term     *term     `parser:"| @@ { \";\" }"`
 }
 
+// FilterExprs is used to parse filters
+// Eg: !contains(cquuc, "foo") regex(domain, "perf.linkedin.com")
 type FilterExprs struct {
-	// !contains(cquuc, "foo") regex(domain, "perf.linkedin.com")
-	Filters []*Function `parser:"{ @@ }"`
+	Filters []*function `parser:"{ @@ }"`
 }
 
-type Function struct {
+type function struct {
 	Unaryop *string `parser:"{ @Unaryop }"`
 	Name    *string `parser:"@Ident"`
-	Args    []*Term `parser:"  \"(\" [ @@ { \",\" @@ } ] \")\" { \";\" }"`
+	Args    []*term `parser:"  \"(\" [ @@ { \",\" @@ } ] \")\" { \";\" }"`
 }
 
-type Term struct {
+type term struct {
 	Variable *string  `parser:"@Ident"`
 	String   *string  `parser:"| @String"`
 	Number   *float64 `parser:"| @Float"`
 }
 
+// ParseFields parses "s" based on a the grammer described
+// by "FieldExprs"
 func ParseFields(s string) (*FieldExprs, error) {
 	parser, err := participle.Build(
 		&FieldExprs{},
@@ -78,6 +82,8 @@ func ParseFields(s string) (*FieldExprs, error) {
 	return myAST, nil
 }
 
+// ParseFilters parses "s" based on a the grammer described
+// by "FilterExprs"
 func ParseFilters(s string) (*FilterExprs, error) {
 	parser, err := participle.Build(&FilterExprs{}, participle.Lexer(customLexer), participle.Unquote(customLexer, "String"))
 	if err != nil {
