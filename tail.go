@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"io"
 
 	"github.com/hpcloud/tail"
 )
@@ -9,7 +9,7 @@ import (
 func tailThis(location string) (*tail.Tail, error) {
 	tailConfig := tail.Config{
 		Location: &tail.SeekInfo{
-			Offset: 0, Whence: os.SEEK_END,
+			Offset: 0, Whence: io.SeekEnd,
 		},
 		ReOpen: true,
 		Follow: true,

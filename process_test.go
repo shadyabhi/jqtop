@@ -35,7 +35,7 @@ func TestIsMatching(t *testing.T) {
 		},
 	}
 	r := isMatching(`{"foo": "i am awesome"}`, []filter{})
-	if r == false {
+	if !r {
 		t.Errorf("No filters provided but line was filtered")
 	}
 

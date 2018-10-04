@@ -2,11 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go/parser"
 
 	"github.com/shadyabhi/jqtop/argparser"
-
-	"go/ast"
 
 	arg "github.com/alexflint/go-arg"
 	"github.com/sirupsen/logrus"
@@ -57,15 +54,6 @@ func (f *complexField) UnmarshalText(b []byte) error {
 		}
 	}
 	return nil
-}
-
-func getAST(s string) (ast.Expr, error) {
-	ast, err := parser.ParseExpr(s)
-	if err != nil {
-		return nil, err
-	}
-
-	return ast, nil
 }
 
 var args struct {
