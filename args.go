@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"go/parser"
-	"jqtop/argparser"
+
+	"github.com/shadyabhi/jqtop/argparser"
 
 	"go/ast"
 

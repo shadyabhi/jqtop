@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"jqtop/argparser"
+
+	"github.com/shadyabhi/jqtop/argparser"
 )
 
 func parseFilters(s string) ([]filter, error) {
