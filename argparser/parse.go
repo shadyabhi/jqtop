@@ -24,7 +24,7 @@ var customLexer = lexer.Must(lexer.Regexp(
 
 // FieldExprs is used to parse fields
 //
-// Eg: field2(1, 2); field1; f3 = foo(1,2);
+//  Eg: field2(1, 2); field1; f3 = foo(1,2);
 type FieldExprs struct {
 	Exprs []*fieldExpr `parser:"{ @@ }"`
 }
@@ -46,7 +46,7 @@ type expr struct {
 
 // FilterExprs is used to parse filters
 //
-// Eg: !contains(cquuc, "foo") regex(domain, "perf.linkedin.com")
+//  Eg: !contains(cquuc, "foo") regex(domain, "perf.linkedin.com")
 type FilterExprs struct {
 	Filters []*function `parser:"{ @@ }"`
 }
