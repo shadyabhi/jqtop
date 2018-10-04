@@ -1,5 +1,12 @@
 language: go
 
+install:
+    - go get github.com/alexflint/go-arg
+    - go get github.com/hpcloud/tail
+    - go get github.com/paulbellamy/ratecounter
+    - go get github.com/sirupsen/logrus
+    - go get github.com/tidwall/gjson
+
 go:
   - 1.2
   - 1.3
