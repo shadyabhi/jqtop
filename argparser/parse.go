@@ -23,41 +23,41 @@ var customLexer = lexer.Must(lexer.Regexp(
 		`|(?P<Rparen>[\)])`,
 ))
 
-// field2(1, 2); field1; f3 = foo(1,2);
 type FieldExprs struct {
-	Exprs []*FieldExpr `{ @@ }`
+	// field2(1, 2); field1; f3 = foo(1,2);
+	Exprs []*FieldExpr `parser:"{ @@ }"`
 }
 
 type FieldExpr struct {
-	Assignment *Assignment ` @@ `
-	Expr       *Expr       `| @@`
+	Assignment *Assignment `parser:" @@ "`
+	Expr       *Expr       `parser:"| @@"`
 }
 
 type Assignment struct {
-	Variable string `@Ident "="`
-	Expr     *Expr  `@@`
+	Variable string `parser:"@Ident \"=\""`
+	Expr     *Expr  `parser:"@@"`
 }
 
 type Expr struct {
-	Function *Function `  @@`
-	Term     *Term     `| @@ { ";" }`
+	Function *Function `parser:"@@"`
+	Term     *Term     `parser:"| @@ { \";\" }"`
 }
 
-// !contains(cquuc, "foo") regex(domain, "perf.linkedin.com")
 type FilterExprs struct {
+	// !contains(cquuc, "foo") regex(domain, "perf.linkedin.com")
 	Filters []*Function `parser:"{ @@ }"`
 }
 
 type Function struct {
 	Unaryop *string `parser:"{ @Unaryop }"`
-	Name    *string `@Ident`
-	Args    []*Term `"(" [ @@ { "," @@ } ] ")" { ";" }`
+	Name    *string `parser:"@Ident"`
+	Args    []*Term `parser:"  \"(\" [ @@ { \",\" @@ } ] \")\" { \";\" }"`
 }
 
 type Term struct {
-	Variable *string  `@Ident`
-	String   *string  `| @String`
-	Number   *float64 `| @Float`
+	Variable *string  `parser:"@Ident"`
+	String   *string  `parser:"| @String"`
+	Number   *float64 `parser:"| @Float"`
 }
 
 func ParseFields(s string) (*FieldExprs, error) {
@@ -75,7 +75,6 @@ func ParseFields(s string) (*FieldExprs, error) {
 	if err != nil {
 		return &FieldExprs{}, err
 	}
-	// repr.Println(myAST, repr.Indent("  "), repr.OmitEmpty(true))
 	return myAST, nil
 }
 
@@ -89,7 +88,5 @@ func ParseFilters(s string) (*FilterExprs, error) {
 	if err != nil {
 		return &FilterExprs{}, err
 	}
-	// repr.Println(myAST, repr.Indent("  "), repr.OmitEmpty(true))
-	// spew.Dump(myAST)
 	return myAST, nil
 }
