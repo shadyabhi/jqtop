@@ -37,9 +37,9 @@ jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
 ```
 **We can answer questions like**:-
 
-* Unique values of "request" or any other field that are being hit per second.
-* Apart from the fields that already exist, you can also create new fields (for eg, "domain" field from "request" field by applying regex) on the fly and view stats of that.
-* Filter lines on which stats are calculated based on some filters.
+* Stats for `request`.
+* Stats for `derived fields` like `http_method` using `request` field. 
+* Filter lines that should be processed for stats
 
 ## Short tutorial
 
@@ -48,6 +48,21 @@ The CLI tool takes 3 basic parameters:-
 * `-file`: File that needs to be tailed.
 * `-fields`: Fields that need to be aggregated.
 * `-filters`: Filters used to filter lines that we want.
+* ... and others
+
+```
+$ ./jqtop -h
+Usage: jqtop --file FILE [--interval INTERVAL] [--maxresult MAXRESULT] [--verbose] [--complexfield COMPLEXFIELD] [--filter FILTER]
+
+Options:
+  --file FILE
+  --interval INTERVAL, -i INTERVAL [default: 1]
+  --maxresult MAXRESULT, -m MAXRESULT [default: 10]
+  --verbose, -v
+  --complexfield COMPLEXFIELD, -F COMPLEXFIELD
+  --filter FILTER
+  --help, -h             display this help and exit
+```
 
 ### Existing Fields
 
