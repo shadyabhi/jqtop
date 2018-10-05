@@ -131,21 +131,31 @@ This is a complex example that uses both derived fields and filters.
 
 #### Show top paths with http method as POST.
 
-So, there is no field which has context_path as it's value, so we'll have to create a new derived field.
+* Create fields
+
+There is no field which has `context_path` as it's value, so we'll have to create a new derived field.
 
 ```
 paths = regex_capture(request, "[A-Z]+? (.*?) ")
 ```
 
-As we need to filter logs that contain only POST, we'll need to create a new field http_method and filter based on that.
+As we need to filter logs that contain only POST, we'll need to create a new field `http_method` and filter based on that.
 
-So, out new `field` argument would be:-
+Our new `field` argument would be:-
 
 ```
 paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(request, "(.*?) ");
 ```
 
+* Create filters
+
 To filter based on `http_method`, out `--filter` argument would look like:-
+
+```
+equals(http_method, "POST")
+```
+
+* Final CLI options
 
 ```
 $ ./jqtop -file ./logfile -F 'paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(request, "(.*?) ");' --filter 'equals(http_method, "POST")'
