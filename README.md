@@ -41,6 +41,14 @@ jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
 * Stats for `derived fields` like `http_method` using `request` field. 
 * Filter lines that should be processed for stats
 
+**For the impatient folks, here's a sample usage:-**
+
+* Creates a new `derived` field, `http_method` by applying regex on already existing field `request`. 
+* Similarly, derive one more field `paths` which extracts path from the field `request`. 
+* Filter only lines that have `http_method == "GET"`. 
+
+![Alt Text](https://shadyabhi.keybase.pub/jqtop.gif)
+
 ## Short tutorial
 
 The CLI tool takes 3 basic parameters:-
