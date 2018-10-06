@@ -27,3 +27,22 @@ func sliceEqual(a, b []string) bool {
 	}
 	return true
 }
+
+func TestSliceContains(t *testing.T) {
+	mySlice := []string{"hello", "world"}
+
+	var testCases = []struct {
+		in       string
+		expected bool
+	}{
+		{"hello", true},
+		{"not_exist", false},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.in, func(t *testing.T) {
+			if ret := sliceContains(mySlice, tt.in); ret != tt.expected {
+				t.Errorf("TestSliceContains: For input: %s, we expected: %t", tt.in, tt.expected)
+			}
+		})
+	}
+}
