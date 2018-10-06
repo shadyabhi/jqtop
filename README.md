@@ -27,7 +27,7 @@ jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
   "time_local": "04/Oct/2018:06:30:27 +0000",
   "remote_addr": "69.162.124.230",
   "remote_user": "",
-  "request": "HEAD / HTTP/1.1",
+  "request": "HEAD /somepath.php HTTP/1.1",
   "status": "200",
   "body_bytes_sent": "0",
   "request_time": "0.000",
@@ -45,23 +45,26 @@ jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
 
 The CLI tool takes 3 basic parameters:-
 
-* `-file`: File that needs to be tailed.
-* `-fields`: Fields that need to be aggregated.
-* `-filters`: Filters used to filter lines that we want.
+* `--file`: File that needs to be tailed.
+* `--fields`: Fields that need to be aggregated.
+* `--filters`: Filters used to filter lines that we want.
 * ... and others
 
 ```
 $ ./jqtop -h
-Usage: jqtop --file FILE [--interval INTERVAL] [--maxresult MAXRESULT] [--verbose] [--complexfield COMPLEXFIELD] [--filter FILTER]
+Usage: jqtop --file FILE [--interval INTERVAL] [--maxresult MAXRESULT] [--verbose] [--clearscreen] [--fields FIELDS] [--filters FILTERS]
 
 Options:
-  --file FILE
-  --interval INTERVAL, -i INTERVAL [default: 1]
-  --maxresult MAXRESULT, -m MAXRESULT [default: 10]
+  --file FILE            Path to file that will be read
+  --interval INTERVAL, -i INTERVAL
+                         Interval at which stats are calculated [default: 1]
+  --maxresult MAXRESULT, -m MAXRESULT
+                         Max results to show [default: 10]
   --verbose, -v
-  --complexfield COMPLEXFIELD, -F COMPLEXFIELD
-  --filter FILTER
-  --help, -h             display this help and exit
+  --clearscreen, -c      Clear screen each time stats are shown
+  --fields FIELDS        Fields that need to shown for stats
+  --filters FILTERS      Filters to filter lines that'll be processed
+  --help, -h
 ```
 
 ### Existing Fields
@@ -69,7 +72,7 @@ Options:
 #### Get stats for unique "requests" being made
 
 ```
-$ ./jqtop -file ./logfile -F request
+$ ./jqtop -file ./logfile --fields request
 2018/10/04 12:58:47 Seeked ./logfile - &{Offset:0 Whence:2}
 ✖ Parse error rate: 0
 ➤ request
@@ -96,7 +99,7 @@ In the above json docs, we can see that there is no HTTP method field but a full
 We'll use a simple regex to derive the field "http_method" from the "request" field.
 
 ```
-$ ./jqtop -file ./logfile -F 'http_method = regex_capture(request, "(.*?) ")'
+$ ./jqtop -file ./logfile --fields 'http_method = regex_capture(request, "(.*?) ")'
 2018/10/05 06:45:23 Seeked ./logfile - &{Offset:0 Whence:2}
 ✖ Parse error rate: 0
 ➤ http_method
@@ -113,7 +116,7 @@ We can specify multiple fields by just deelimiting them with a semi-colon.
 Let's show only top 2 results.
 
 ```
-$ ./jqtop -file ./logfile -F 'http_method = regex_capture(request, "(.*?) "); request' -m 2
+$ ./jqtop -file ./logfile --fields 'http_method = regex_capture(request, "(.*?) "); request' -m 2
 2018/10/05 06:46:15 Seeked ./logfile - &{Offset:0 Whence:2}
 ✖ Parse error rate: 0
 ➤ request
@@ -158,7 +161,7 @@ equals(http_method, "POST")
 * Final CLI options
 
 ```
-$ ./jqtop -file ./logfile -F 'paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(request, "(.*?) ");' --filter 'equals(http_method, "POST")'
+$ ./jqtop -file ./logfile --fields 'paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(request, "(.*?) ");' --filter 'equals(http_method, "POST")'
 2018/10/05 07:07:38 Seeked ./logfile - &{Offset:0 Whence:2}
 ✖ Parse error rate: 0
 ➤ http_method
