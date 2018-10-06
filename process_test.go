@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/hpcloud/tail"
 	"github.com/tidwall/gjson"
 )
 
@@ -130,6 +131,31 @@ func TestProcessLine(t *testing.T) {
 
 	if len(countersMap.counters) != 5 {
 		t.Errorf("processLine didn't parse all fields")
+	}
+}
+
+func TestProcessLines(t *testing.T) {
+	// Set proper args
+	args.Interval = 1
+	args.Fields = "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
+	args.Filters = ""
+
+	linesChan := make(chan *tail.Line)
+
+	// Send lines to channel
+	go func() {
+		linesChan <- tail.NewLine(`{"cqtn": "23/Sep/2018:02:34:25 -0000", "cqhm": "GET", "cquuc": "http://coolhost.com:1234/admin", "cqhv": "HTTP/1.1", "pssc": "200"}`)
+		linesChan <- tail.NewLine(`{"cqtn": "23/Sep/2018:02:34:25 -0000", "cqhm": "GET", "cquuc": "http://coolhost2.com:1234/admin", "cqhv": "HTTP/1.1", "pssc": "200"}`)
+		close(linesChan)
+	}()
+
+	// Reading from channel
+	processLines(linesChan)
+	if len(countersMap.counters) != 2 {
+		t.Errorf("Correct numbers of counters were not updated")
+	}
+	if countersMap.counters["cquuc"]["http://coolhost.com:1234/admin"].String() != "1" {
+		t.Errorf("Wrong counter values")
 	}
 }
 
