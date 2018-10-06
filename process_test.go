@@ -119,6 +119,7 @@ func TestIsMatchFilter(t *testing.T) {
 
 func TestProcessLine(t *testing.T) {
 	args.Interval = 1
+	clearCounters()
 
 	line := []string{
 		`{"cqtn": "23/Sep/2018:02:34:25 -0000", "cqhm": "GET", "cquuc": "http://coolhost.com:1234/admin", "cqhv": "HTTP/1.1", "pssc": "200"}`,
@@ -139,7 +140,7 @@ func TestProcessLine(t *testing.T) {
 	processLine(line[0], allFields)
 
 	if len(countersMap.counters) != 5 {
-		t.Errorf("processLine didn't parse all fields")
+		t.Errorf("processLine didn't parse all fields\n. Current counters: %+v", countersMap.counters)
 	}
 }
 

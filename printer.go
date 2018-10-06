@@ -16,11 +16,12 @@ type counterData struct {
 	Value int64
 }
 
+// getSortedCounters takes counters map and returns a slice in decreasing order
+// of ratecounter.RateCounter value
 func getSortedCounters(counters map[string]*ratecounter.RateCounter) []counterData {
 	var ss []counterData
 	for k, counter := range counters {
 		ss = append(ss, counterData{k, counter.Rate()})
-		// fmt.Printf("%s: %d\n", k, counter.Rate())
 	}
 	sort.Slice(ss, func(i, j int) bool {
 		return ss[i].Value > ss[j].Value
