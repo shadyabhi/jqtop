@@ -7,8 +7,6 @@ import (
 )
 
 func init() {
-	complexFields = make(map[string]*complexField)
-
 	// Defaults
 	args.Interval = 1
 	args.MaxResult = 10

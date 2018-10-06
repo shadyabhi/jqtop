@@ -34,14 +34,14 @@ func TestIsMatching(t *testing.T) {
 			true,
 		},
 	}
-	r := isMatching(`{"foo": "i am awesome"}`, []filter{})
+	r := isMatching(`{"foo": "i am awesome"}`, []filter{}, Fields{})
 	if !r {
 		t.Errorf("No filters provided but line was filtered")
 	}
 
 	for i, tt := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			r := isMatching(tt.json, []filter{*tt.f})
+			r := isMatching(tt.json, []filter{*tt.f}, Fields{})
 			if r != tt.expected {
 				t.Errorf("Unexpected return from isMatchFilter. Input: %+v", tt)
 			}
@@ -98,7 +98,7 @@ func TestIsMatchFilter(t *testing.T) {
 	}
 	for i, tt := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			r := isMatchFilter(tt.json, *tt.f)
+			r := isMatchFilter(tt.json, *tt.f, Fields{})
 			if r != tt.expected {
 				t.Errorf("Unexpected return from isMatchFilter. Input: %+v", tt)
 			}
@@ -115,14 +115,18 @@ func TestProcessLine(t *testing.T) {
 	}
 
 	simpleF := []string{"cquuc", "pssc", "cqhm", "cqhv"}
-
-	complexFields["host_with_protocol"] = &complexField{
+	derivedFields := make(map[string]*derivedField)
+	derivedFields["host_with_protocol"] = &derivedField{
 		NewField: "host_with_protocol",
 		Fname:    "regex_capture",
 		Args:     []string{"cquuc", "(.*?://.*?)/"},
 	}
+	allFields := Fields{
+		SimpleFields:  simpleF,
+		DerivedFields: derivedFields,
+	}
 
-	processLine(line[0], simpleF, complexFields)
+	processLine(line[0], allFields)
 
 	if len(countersMap.counters) != 5 {
 		t.Errorf("processLine didn't parse all fields")
@@ -137,15 +141,19 @@ func BenchmarkProcessLine(b *testing.B) {
 	}
 
 	simpleF := []string{"cquuc", "pssc", "cqhm", "cqhv"}
-
-	complexFields["host_with_protocol"] = &complexField{
+	derivedFields := make(map[string]*derivedField)
+	derivedFields["host_with_protocol"] = &derivedField{
 		NewField: "host_with_protocol",
 		Fname:    "regex_capture",
 		Args:     []string{"cquuc", "(.*?://.*?)/"},
 	}
+	allFields := Fields{
+		SimpleFields:  simpleF,
+		DerivedFields: derivedFields,
+	}
 
 	for n := 0; n < b.N; n++ {
-		processLine(line[0], simpleF, complexFields)
+		processLine(line[0], allFields)
 	}
 }
 

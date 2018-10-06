@@ -6,6 +6,18 @@ import (
 	"github.com/shadyabhi/jqtop/argparser"
 )
 
+// filter is a type that represens a single filter
+type filter struct {
+	Negate   bool
+	Function string
+	Pos      int
+
+	// We can have n number of Args, should be generic
+	Args []string
+}
+
+// parseFilters parses filters into []filter by reading
+// the string that represent filters
 func parseFilters(s string) ([]filter, error) {
 	if s == "" {
 		return []filter{}, nil

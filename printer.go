@@ -48,6 +48,10 @@ func printCounter(fieldName string, ss []counterData) {
 func dumpCounters() {
 	ticker := time.NewTicker(time.Second * time.Duration(args.Interval))
 	for range ticker.C {
+		if args.Clearscreen {
+			fmt.Println("\033[H\033[2J")
+		}
+
 		fmt.Printf("✖ Parse error rate: %d\n", parseErrors.Rate())
 		count := 0
 

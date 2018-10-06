@@ -22,16 +22,21 @@ var countersMap struct {
 var parseErrors *ratecounter.RateCounter
 
 func processLines(lines chan *tail.Line) {
-	filters, err := parseFilters(args.Filter)
+	filters, err := parseFilters(args.Filters)
 	if err != nil {
 		logrus.Fatalf("Error parsing filters, existing")
 	}
+	allFields, err := extractFields(args.Fields)
+	if err != nil {
+		logrus.Fatalf("Error parsing fields, existing")
+	}
+
 	logrus.Debugf("Filters to apply: %+v", filters)
 
 	for line := range lines {
 		logrus.Debugf("processLines: Processing line: %s", line)
-		if isMatching(line.Text, filters) {
-			processLine(line.Text, simpleFields, complexFields)
+		if isMatching(line.Text, filters, allFields) {
+			processLine(line.Text, allFields)
 		} else {
 			logrus.Debugf("processLines: Line was filtered: %s", line)
 		}
@@ -39,7 +44,7 @@ func processLines(lines chan *tail.Line) {
 }
 
 // isMatching filters line based on []filters provided
-func isMatching(line string, filters []filter) bool {
+func isMatching(line string, filters []filter, allFields Fields) bool {
 	if len(filters) == 0 {
 		return true
 	}
@@ -47,7 +52,7 @@ func isMatching(line string, filters []filter) bool {
 	results := make([]bool, 0)
 
 	for _, f := range filters {
-		isMatch := isMatchFilter(line, f)
+		isMatch := isMatchFilter(line, f, allFields)
 
 		if f.Negate {
 			isMatch = !isMatch
@@ -70,11 +75,11 @@ func isMatching(line string, filters []filter) bool {
 }
 
 // getAnyValue gets value of a field (simple or complex)
-func getAnyValue(fieldName string, line string) (string, error) {
+func getAnyValue(fieldName string, line string, allFields Fields) (string, error) {
 	contents, exists := getValue(line, fieldName)
 	if !exists {
 		// Let's try complex fields
-		contents, err := getComplexFieldValue(fieldName, line, complexFields)
+		contents, err := getComplexFieldValue(fieldName, line, allFields.DerivedFields)
 		if err != nil {
 			parseErrors.Incr(1)
 		}
@@ -86,9 +91,9 @@ func getAnyValue(fieldName string, line string) (string, error) {
 
 // isMatchFilter decides if a line should be filtered or not
 // based on the "filte" provided
-func isMatchFilter(line string, f filter) bool {
+func isMatchFilter(line string, f filter, allFields Fields) bool {
 	// Get value of field
-	contents, err := getAnyValue(f.Args[0], line)
+	contents, err := getAnyValue(f.Args[0], line, allFields)
 	if err != nil {
 		parseErrors.Incr(1)
 		return false
@@ -113,12 +118,12 @@ func isMatchFilter(line string, f filter) bool {
 }
 
 // processLine process various kind of lines
-func processLine(line string, simpleFields []string, complexFields map[string]*complexField) {
+func processLine(line string, allFields Fields) {
 	// Simple fields
-	processSimpleFields(line, simpleFields)
+	processSimpleFields(line, allFields.SimpleFields)
 
 	// Complex fields
-	if err := processComplexFields(line, complexFields); err != nil {
+	if err := processComplexFields(line, allFields.DerivedFields); err != nil {
 		parseErrors.Incr(1)
 	}
 }
@@ -137,7 +142,7 @@ func processSimpleFields(line string, fields []string) {
 	processValues(values)
 }
 
-func getComplexFieldValue(fieldName string, line string, fields map[string]*complexField) (string, error) {
+func getComplexFieldValue(fieldName string, line string, fields map[string]*derivedField) (string, error) {
 	cField, ok := fields[fieldName]
 	if !ok {
 		return "", fmt.Errorf("Couldn't get value for %s", cField)
@@ -155,7 +160,7 @@ func getComplexFieldValue(fieldName string, line string, fields map[string]*comp
 
 // processComplexFields parses fields whose values
 // are derived from other fields
-func processComplexFields(line string, fields map[string]*complexField) error {
+func processComplexFields(line string, fields map[string]*derivedField) error {
 	values := make(map[string]string)
 	for k, v := range fields {
 		value, err := getComplexFieldValue(k, line, fields)
@@ -175,7 +180,7 @@ func getValue(s string, f string) (string, bool) {
 }
 
 // findValue uses regex "regex" and returns the match, else error
-func deriveValue(f *complexField, origValue string) (string, error) {
+func deriveValue(f *derivedField, origValue string) (string, error) {
 	// Currently, only supporting regex_capture
 	r, err := regexp.Compile(f.Args[1])
 	if err != nil {

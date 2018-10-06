@@ -1,73 +1,19 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/shadyabhi/jqtop/argparser"
-
 	arg "github.com/alexflint/go-arg"
 	"github.com/sirupsen/logrus"
 )
 
-// Accepts command line arguments of the form "head.tail"
-type complexField struct {
-	NewField string
-	Fname    string
-	Args     []string
-}
-
-var complexFields map[string]*complexField
-var simpleFields []string
-
-type filter struct {
-	Negate   bool
-	Function string
-	Pos      int
-	// We can have more than 2 in future
-	Args []string
-}
-
-func (f *complexField) UnmarshalText(b []byte) error {
-	s := string(b)
-
-	myAST, err := argparser.ParseFields(s)
-	if err != nil {
-		return fmt.Errorf("Invalid format for fields: %s", err)
-	}
-
-	for _, expr := range myAST.Exprs {
-		if expr.Assignment == nil {
-			// Simple field
-			simpleFields = append(simpleFields, *expr.Expr.Term.Variable)
-		} else {
-			// Complex field
-			// TODO: Convert to function
-			args := []string{}
-			for i := range expr.Assignment.Expr.Function.Args {
-				if i == 0 {
-					args = append(args, *expr.Assignment.Expr.Function.Args[i].Variable)
-				} else {
-					args = append(args, *expr.Assignment.Expr.Function.Args[i].String)
-				}
-			}
-			complexFields[expr.Assignment.Variable] = &complexField{expr.Assignment.Variable, *expr.Assignment.Expr.Function.Name, args}
-		}
-	}
-	return nil
-}
-
 var args struct {
-	File      string `arg:"required"`
-	Interval  int    `arg:"-i"`
-	MaxResult int    `arg:"-m"`
-	Verbose   bool   `arg:"-v"`
+	File        string `arg:"required" help:"Path to file that will be read"`
+	Interval    int    `arg:"-i" help:"Interval at which stats are calculated"`
+	MaxResult   int    `arg:"-m" help:"Max results to show"`
+	Verbose     bool   `arg:"-v"`
+	Clearscreen bool   `arg:"-c" help:"Clear screen each time stats are shown"`
 
-	// package doesn't support *[]complexField so
-	// we create *complexFieldSlice and use
-	// complexFields.Fields in our code
-	ComplexField *complexField `arg:"-F,separate"`
-	// Same as ComplexField
-	Filter string `arg:"separate"`
+	Fields  string `arg:"separate" help:"Fields that need to shown for stats"`
+	Filters string `arg:"separate" help:"Filters to filter lines that'll be processed"`
 }
 
 // parseArgs parses args and validates
