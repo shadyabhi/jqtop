@@ -5,6 +5,18 @@ import (
 	"testing"
 )
 
+func TestGetFieldsInOrder(t *testing.T) {
+	s := "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
+	expected := []string{"cquuc", "host_with_protocol"}
+
+	fields := getFieldsInOrder(s)
+	for i, f := range fields {
+		if expected[i] != f {
+			t.Errorf("For fields %s, expected: %s, got: %s", s, expected[i], f)
+		}
+	}
+}
+
 func TestExtractFields(t *testing.T) {
 	fieldsStr := "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
 	allFields, err := extractFields(fieldsStr)

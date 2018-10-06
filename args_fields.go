@@ -18,6 +18,18 @@ type Fields struct {
 	DerivedFields map[string]*derivedField
 }
 
+func getFieldsInOrder(s string) (allFields []string) {
+	myAST, _ := argparser.ParseFields(s)
+	for _, expr := range myAST.Exprs {
+		if expr.Assignment != nil {
+			allFields = append(allFields, expr.Assignment.Variable)
+		} else {
+			allFields = append(allFields, *expr.Expr.Term.Variable)
+		}
+	}
+	return allFields
+}
+
 func extractFields(s string) (Fields, error) {
 	allFields := Fields{}
 	simpleFields := []string{}

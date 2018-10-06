@@ -57,8 +57,8 @@ func dumpCounters() {
 		count := 0
 
 		countersMap.mu.RLock()
-		for fieldName, fieldValues := range countersMap.counters {
-			ss := getSortedCounters(fieldValues)
+		for _, fieldName := range getFieldsInOrder(args.Fields) {
+			ss := getSortedCounters(countersMap.counters[fieldName])
 			printCounter(fieldName, ss)
 			count++
 		}
