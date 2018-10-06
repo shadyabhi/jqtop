@@ -8,6 +8,15 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// clearCounters helps us to clear counters
+// in tests
+func clearCounters() {
+	// Clear counters
+	for k := range countersMap.counters {
+		delete(countersMap.counters, k)
+	}
+}
+
 func TestIsMatching(t *testing.T) {
 	var testCases = []struct {
 		json     string
@@ -135,10 +144,11 @@ func TestProcessLine(t *testing.T) {
 }
 
 func TestProcessLines(t *testing.T) {
-	// Set proper args
+	// Set proper args and vars
 	args.Interval = 1
 	args.Fields = "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
 	args.Filters = ""
+	clearCounters()
 
 	linesChan := make(chan *tail.Line)
 

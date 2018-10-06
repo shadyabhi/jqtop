@@ -12,4 +12,10 @@ func TestParseFilters(t *testing.T) {
 	if len(filters) != 2 {
 		t.Errorf("All filters were not parsed")
 	}
+
+	// Invalid filters
+	filters, err = parseFilters(`contains(`)
+	if err == nil {
+		t.Error("Expected error, got no error")
+	}
 }
