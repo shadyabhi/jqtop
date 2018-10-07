@@ -47,7 +47,7 @@ jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
 * Similarly, derive one more field `paths` which extracts path from the field `request`. 
 * Filter only lines that have `http_method == "GET"`. 
 
-![Alt Text](https://shadyabhi.keybase.pub/jqtop.gif)
+![Alt Text](https://shadyabhi.keybase.pub/jqtop_demo_v1.gif)
 
 ## Short tutorial
 
