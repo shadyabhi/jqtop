@@ -18,6 +18,8 @@
 
 jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
 
+Full manual is available here: https://github.com/shadyabhi/jqtop/wiki#manual
+
 ## What does it do?
 
 **For eg, for a stream of logs like**:-
