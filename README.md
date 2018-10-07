@@ -160,7 +160,7 @@ paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(re
 
 * Create filters
 
-To filter based on `http_method`, out `--filter` argument would look like:-
+To filter based on `http_method`, out `---filters` argument would look like:-
 
 ```
 equals(http_method, "POST")
@@ -169,7 +169,7 @@ equals(http_method, "POST")
 * Final CLI options
 
 ```
-$ ./jqtop -file ./logfile --fields 'paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(request, "(.*?) ");' --filter 'equals(http_method, "POST")'
+$ ./jqtop -file ./logfile --fields 'paths = regex_capture(request, "[A-Z]+? (.*?) "); http_method = regex_capture(request, "(.*?) ");' ---filters 'equals(http_method, "POST")'
 2018/10/05 07:07:38 Seeked ./logfile - &{Offset:0 Whence:2}
 ✖ Parse error rate: 0
 ➤ http_method
