@@ -1,9 +1,13 @@
 package main
 
-import "log"
+import (
+	log "github.com/sirupsen/logrus"
+)
 
 func main() {
-	parseArgs()
+	if err := parseArgs(); err != nil {
+		log.Fatalf("Error parsing cmdline args: %s", err)
+	}
 
 	t, err := tailThis(args.File)
 	if err != nil {
