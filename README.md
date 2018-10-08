@@ -4,6 +4,7 @@
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/shadyabhi/jqtop)
 
    * [jqtop](#jqtop)
+      * [Installation](#installation)
       * [What does it do?](#what-does-it-do)
       * [Short tutorial](#short-tutorial)
          * [Existing Fields](#existing-fields)
@@ -19,6 +20,12 @@
 jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
 
 Full manual is available here: https://github.com/shadyabhi/jqtop/wiki#manual
+
+## Installation
+
+```
+go get github.com/shadyabhi/jqtop/cmd/jqtop
+```
 
 ## What does it do?
 
