@@ -1,4 +1,4 @@
-package main
+package jqtop
 
 var filterFunctions = struct {
 	Contains string

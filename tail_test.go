@@ -1,4 +1,4 @@
-package main
+package jqtop
 
 import (
 	"io/ioutil"
@@ -8,7 +8,7 @@ import (
 
 func TestTailThis(t *testing.T) {
 	tmpfile, err := ioutil.TempFile("./", "tailfile")
-	fLines, err := tailThis(tmpfile.Name())
+	fLines, err := TailFile(tmpfile.Name())
 	if err != nil {
 		t.Errorf("Error reading the file, not expected")
 	}

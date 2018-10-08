@@ -1,4 +1,4 @@
-package main
+package jqtop
 
 import (
 	"strconv"
@@ -161,7 +161,7 @@ func TestProcessLines(t *testing.T) {
 	}()
 
 	// Reading from channel
-	processLines(linesChan)
+	ProcessLines(linesChan)
 	if len(countersMap.counters) != 2 {
 		t.Errorf("Correct numbers of counters were not updated")
 	}

@@ -1,4 +1,4 @@
-package main
+package jqtop
 
 import (
 	"io"
@@ -6,7 +6,8 @@ import (
 	"github.com/hpcloud/tail"
 )
 
-func tailThis(location string) (*tail.Tail, error) {
+// TailFile tails the file that exists at path "location"
+func TailFile(location string) (*tail.Tail, error) {
 	tailConfig := tail.Config{
 		Location: &tail.SeekInfo{
 			Offset: 0, Whence: io.SeekEnd,

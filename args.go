@@ -1,4 +1,4 @@
-package main
+package jqtop
 
 import (
 	"os"
@@ -54,8 +54,8 @@ type Arguments struct {
 
 var args Arguments
 
-// parseArgs parses args and validates
-func parseArgs() error {
+// ParseArgs parses args and validates
+func ParseArgs() error {
 	// Defaults are defined in init.go so they
 	// can be used in tests too.
 	p, err := arg.NewParser(arg.Config{}, &args, &described{})
