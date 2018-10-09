@@ -4,6 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Start function is called from outside for default behavior
 func Start() {
 	if err := ParseArgs(); err != nil {
 		log.Fatalf("Error parsing cmdline args: %s", err)

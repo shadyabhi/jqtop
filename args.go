@@ -48,7 +48,7 @@ type Arguments struct {
 	Verbose     bool   `arg:"-v"`
 	Clearscreen bool   `arg:"-c" help:"Clear screen each time stats are shown"`
 
-	Fields  string `arg:"separate" help:"Fields that need to shown for stats"`
+	Fields  string `arg:"required,separate" help:"Fields that need to shown for stats"`
 	Filters string `arg:"separate" help:"Filters to filter lines that'll be processed"`
 }
 
