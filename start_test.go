@@ -143,9 +143,11 @@ func TestStart(t *testing.T) {
 		t.Errorf("No counters were updated after timeout")
 
 	case <-tick:
+		countersMap.mu.RLock()
 		if len(countersMap.counters) > 0 {
 			break
 		}
+		countersMap.mu.Unlock()
 	}
 
 }
