@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/hpcloud/tail"
+	randomdata "github.com/shadyabhi/go-randomdata"
 )
 
 func linesGenerator(linesChan chan *tail.Line, n int) {
