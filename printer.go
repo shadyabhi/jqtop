@@ -2,6 +2,8 @@ package jqtop
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"sort"
 	"strconv"
 	"time"
@@ -37,30 +39,34 @@ func getSortedCounters(counters map[string]*ratecounter.RateCounter) []counterDa
 	return ss
 }
 
-func printCounter(fieldName string, ss []counterData) {
-	fmt.Printf("➤ %s\n", fieldName)
+func printCounter(out io.Writer, fieldName string, ss []counterData) {
+	fmt.Fprintf(out, "➤ %s\n", fieldName)
 	indent := "└──"
 	for _, counterData := range ss {
-		fmt.Printf("%s %4s: %s\n", indent, strconv.FormatInt(counterData.Value, 10), counterData.Key)
+		fmt.Fprintf(out, "%s %4s: %s\n", indent, strconv.FormatInt(counterData.Value, 10), counterData.Key)
 	}
-	fmt.Println("")
+	fmt.Fprintln(out, "")
 }
 
 // DumpCounters is a function to print stats to stdout
-func DumpCounters() {
-	ticker := time.NewTicker(time.Second * time.Duration(args.Interval))
+func DumpCounters(out io.Writer) {
+	if out == nil {
+		out = os.Stdout
+	}
+
+	ticker := time.NewTicker(time.Millisecond * time.Duration(args.Interval))
 	for range ticker.C {
 		if args.Clearscreen {
 			fmt.Println("\033[H\033[2J")
 		}
 
-		fmt.Printf("✖ Parse error rate: %d\n", parseErrors.Rate())
+		fmt.Fprintf(out, "✖ Parse error rate: %d\n", parseErrors.Rate())
 		count := 0
 
 		countersMap.mu.RLock()
 		for _, fieldName := range getFieldsInOrder(args.Fields) {
 			ss := getSortedCounters(countersMap.counters[fieldName])
-			printCounter(fieldName, ss)
+			printCounter(out, fieldName, ss)
 			count++
 		}
 		countersMap.mu.RUnlock()

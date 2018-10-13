@@ -2,6 +2,7 @@ package jqtop
 
 import (
 	"bufio"
+	"io"
 	"os"
 
 	"github.com/pkg/errors"
@@ -11,12 +12,12 @@ import (
 )
 
 // Start function is called from outside for default behavior
-func Start() {
+func Start(outStream io.Writer) {
 	if err := ParseArgs(); err != nil {
 		log.Fatalf("Error parsing cmdline args: %s", err)
 	}
 
-	go DumpCounters()
+	go DumpCounters(outStream)
 
 	linesChan := make(chan *tail.Line)
 

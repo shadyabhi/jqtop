@@ -1,9 +1,11 @@
 package jqtop
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/hpcloud/tail"
 	"github.com/pkg/errors"
@@ -13,7 +15,7 @@ func getStdinStream() *os.File {
 	stdin := os.Stdin
 
 	go func() {
-		stdin.Write([]byte("{\"name\": \"foobar\"}\n"))
+		stdin.Write([]byte("{\"fname\": \"foobar\"}\n"))
 	}()
 
 	return stdin
@@ -118,4 +120,32 @@ func TestSetLinesChan(t *testing.T) {
 	if err := setLinesChan("file_doesnt_exist", linesChan2); err == nil {
 		t.Errorf("Expected error as file doesn't exist")
 	}
+}
+
+func TestStart(t *testing.T) {
+	os.Args = []string{"jtop", "--fields", "fname", "-i", "0.01"}
+
+	// Start json stream on stdin
+	getStdinStream()
+
+	buf := make([]byte, 1000)
+	outStream := bytes.NewBuffer(buf)
+
+	go Start(outStream)
+
+	time.Sleep(15 * time.Millisecond)
+
+	// Better than infinite for loop
+	timeout := time.After(1 * time.Second)
+	tick := time.Tick(5 * time.Millisecond)
+	select {
+	case <-timeout:
+		t.Errorf("No counters were updated after timeout")
+
+	case <-tick:
+		if len(countersMap.counters) > 0 {
+			break
+		}
+	}
+
 }
