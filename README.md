@@ -1,3 +1,5 @@
+
+[![GitHub release](https://img.shields.io/github/tag/shadyabhi/jqtop.svg?label=latest)](https://github.com/shadyabhi/jqtop/releases)
 [![Build Status](https://travis-ci.org/shadyabhi/jqtop.png)](https://travis-ci.org/shadyabhi/jqtop)
 [![codecov](https://codecov.io/gh/shadyabhi/jqtop/branch/master/graph/badge.svg)](https://codecov.io/gh/shadyabhi/jqtop)
 [![Go Report Card](https://goreportcard.com/badge/github.com/shadyabhi/jqtop)](https://goreportcard.com/report/github.com/shadyabhi/jqtop)
