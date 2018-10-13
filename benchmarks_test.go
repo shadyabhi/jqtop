@@ -87,7 +87,7 @@ func BenchmarkJqtop(b *testing.B) {
 
 	args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
 	args.Filters = "equals(domain_only, \"google.com\")"
-	runJqtopWithArgs(b, "Get stats for creating new field via regex", args, nLines)
+	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com", args, nLines)
 }
 
 func runJqtopWithArgs(b *testing.B, summary string, args Arguments, nLines []int) {
