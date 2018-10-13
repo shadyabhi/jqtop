@@ -24,10 +24,6 @@ var parseErrors *ratecounter.RateCounter
 // ProcessLines reads from "lines" channel
 // and processes them
 func ProcessLines(lines chan *tail.Line) {
-	startProcessLines(lines)
-}
-
-func startProcessLines(lines chan *tail.Line) {
 	filters, err := parseFilters(args.Filters)
 	if err != nil {
 		logrus.Fatalf("Error parsing filters, existing")
@@ -37,6 +33,16 @@ func startProcessLines(lines chan *tail.Line) {
 		logrus.Fatalf("Error parsing fields, existing")
 	}
 
+	var wg sync.WaitGroup
+	for i := 0; i < args.ParallelProc; i++ {
+		wg.Add(1)
+		go startProcessLines(lines, allFields, filters, &wg)
+	}
+	wg.Wait()
+}
+
+func startProcessLines(lines chan *tail.Line, allFields Fields, filters []filter, wg *sync.WaitGroup) {
+	defer wg.Done()
 	logrus.Debugf("Filters to apply: %+v", filters)
 
 	for line := range lines {

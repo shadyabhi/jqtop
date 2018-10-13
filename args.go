@@ -42,11 +42,12 @@ Field functions:
 
 // Arguments describes the argument that the program receives
 type Arguments struct {
-	File        string  `arg:"" help:"Path to file that will be read"`
-	Interval    float64 `arg:"-i" help:"Interval at which stats are calculated"`
-	MaxResult   int     `arg:"-m" help:"Max results to show"`
-	Verbose     bool    `arg:"-v"`
-	Clearscreen bool    `arg:"-c" help:"Clear screen each time stats are shown"`
+	File         string  `arg:"" help:"Path to file that will be read"`
+	Interval     float64 `arg:"-i" help:"Interval at which stats are calculated"`
+	MaxResult    int     `arg:"-m" help:"Max results to show"`
+	Verbose      bool    `arg:"-v"`
+	Clearscreen  bool    `arg:"-c" help:"Clear screen each time stats are shown"`
+	ParallelProc int     `arg:"-p" help:"Number of parallel processes for processing"`
 
 	Fields  string `arg:"required,separate" help:"Fields that need to shown for stats"`
 	Filters string `arg:"separate" help:"Filters to filter lines that'll be processed"`

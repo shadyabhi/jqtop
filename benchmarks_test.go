@@ -88,6 +88,16 @@ func BenchmarkJqtop(b *testing.B) {
 	args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
 	args.Filters = "equals(domain_only, \"google.com\")"
 	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com", args, nLines)
+
+	args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
+	args.Filters = "equals(domain_only, \"google.com\")"
+	args.ParallelProc = 4
+	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com(parallal = 4)", args, nLines)
+
+	args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
+	args.Filters = "equals(domain_only, \"google.com\")"
+	args.ParallelProc = 12
+	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com(parallal = 12)", args, nLines)
 }
 
 func runJqtopWithArgs(b *testing.B, summary string, args Arguments, nLines []int) {
@@ -119,7 +129,8 @@ func runJqtopWithArgs(b *testing.B, summary string, args Arguments, nLines []int
 	fmt.Printf("\nResults: %s\n", summary)
 	fmt.Println("---------------------------------------------")
 	for i, n := range nLines {
-		fmt.Printf("Average time elapsed in processing %-10d lines: %s\n", n, avgRuntimes[i])
+		fmt.Printf("Average time elapsed in processing %-10d lines: %-10s\n",
+			n, avgRuntimes[i])
 	}
-	fmt.Println()
+	fmt.Printf("QPS :: %-10f\n\n", 1000000000*float64(nLines[len(nLines)-1])/float64(avgRuntimes[len(nLines)-1]))
 }
