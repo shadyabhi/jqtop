@@ -46,6 +46,7 @@ func printCounter(fieldName string, ss []counterData) {
 	fmt.Println("")
 }
 
+// DumpCounters is a function to print stats to stdout
 func DumpCounters() {
 	ticker := time.NewTicker(time.Second * time.Duration(args.Interval))
 	for range ticker.C {

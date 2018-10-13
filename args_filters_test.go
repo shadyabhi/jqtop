@@ -14,7 +14,7 @@ func TestParseFilters(t *testing.T) {
 	}
 
 	// Invalid filters
-	filters, err = parseFilters(`contains(`)
+	_, err = parseFilters(`contains(`)
 	if err == nil {
 		t.Error("Expected error, got no error")
 	}

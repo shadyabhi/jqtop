@@ -33,12 +33,12 @@ func TestExtractFields(t *testing.T) {
 		SimpleFields:  []string{"cquuc"},
 		DerivedFields: derivedFields,
 	}
-	if reflect.DeepEqual(allFields, expectedValue) != true {
+	if !reflect.DeepEqual(allFields, expectedValue) {
 		t.Errorf("allFields struct was equal to what was expected")
 	}
 	// Invalid line
 	fieldsStr = "field1; c = "
-	allFields, err = extractFields(fieldsStr)
+	_, err = extractFields(fieldsStr)
 	if err == nil {
 		t.Errorf("Didn't throw error for an invalid field string")
 	}

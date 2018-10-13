@@ -77,18 +77,17 @@ func isMatching(line string, filters []filter, allFields Fields) bool {
 }
 
 // getAnyValue gets value of a field (simple or complex)
-func getAnyValue(fieldName string, line string, allFields Fields) (string, error) {
+func getAnyValue(fieldName string, line string, allFields Fields) (contents string, err error) {
 	contents, exists := getValue(line, fieldName)
 	if !exists {
 		// Let's try complex fields
-		contents, err := getComplexFieldValue(fieldName, line, allFields.DerivedFields)
+		contents, err = getComplexFieldValue(fieldName, line, allFields.DerivedFields)
 		if err != nil {
 			parseErrors.Incr(1)
 		}
 		return contents, nil
 	}
 	return contents, nil
-
 }
 
 // isMatchFilter decides if a line should be filtered or not

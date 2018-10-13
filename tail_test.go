@@ -5,7 +5,7 @@ import (
 )
 
 func TestTailThis(t *testing.T) {
-	tmpFile, err := getFileToTail()
+	tmpFile, _ := getFileToTail()
 	defer deleteTmpFile(tmpFile)
 
 	fLines, err := TailFile(tmpFile.Name())
@@ -26,7 +26,7 @@ func TestTailThis(t *testing.T) {
 	}
 
 	// File doesn't exist
-	fLines, err = TailFile("foobarnotexist")
+	_, err = TailFile("foobarnotexist")
 	if err == nil {
 		t.Errorf("Expected error as file doesn't exist, got no error")
 	}
