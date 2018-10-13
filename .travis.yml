@@ -8,6 +8,7 @@ install:
     - go get github.com/tidwall/gjson
     - go get github.com/alecthomas/participle
     - go get github.com/pkg/errors
+    - go get github.com/Pallinder/go-randomdata
 
 go:
   - 1.8
