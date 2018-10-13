@@ -42,7 +42,7 @@ Field functions:
 
 // Arguments describes the argument that the program receives
 type Arguments struct {
-	File        string `arg:"required" help:"Path to file that will be read"`
+	File        string `arg:"" help:"Path to file that will be read"`
 	Interval    int    `arg:"-i" help:"Interval at which stats are calculated"`
 	MaxResult   int    `arg:"-m" help:"Max results to show"`
 	Verbose     bool   `arg:"-v"`

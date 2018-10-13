@@ -1,23 +1,17 @@
 package jqtop
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
 func TestTailThis(t *testing.T) {
-	tmpfile, err := ioutil.TempFile("./", "tailfile")
-	fLines, err := TailFile(tmpfile.Name())
+	tmpFile, err := getFileToTail()
+	defer deleteTmpFile(tmpFile)
+
+	fLines, err := TailFile(tmpFile.Name())
 	if err != nil {
 		t.Errorf("Error reading the file, not expected")
 	}
-
-	go func() {
-		for {
-			tmpfile.Write([]byte("foo\n"))
-		}
-	}()
 
 	totalLines := 0
 
@@ -31,8 +25,9 @@ func TestTailThis(t *testing.T) {
 		t.Errorf("Expected two lines to be read, but only read %d lines", totalLines)
 	}
 
-	if err = os.Remove(tmpfile.Name()); err != nil {
-		t.Errorf("There was error deleting the file: %s", err)
+	// File doesn't exist
+	fLines, err = TailFile("foobarnotexist")
+	if err == nil {
+		t.Errorf("Expected error as file doesn't exist, got no error")
 	}
-
 }

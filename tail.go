@@ -12,8 +12,9 @@ func TailFile(location string) (*tail.Tail, error) {
 		Location: &tail.SeekInfo{
 			Offset: 0, Whence: io.SeekEnd,
 		},
-		ReOpen: true,
-		Follow: true,
+		ReOpen:    true,
+		Follow:    true,
+		MustExist: true, //As we're reading stats, file should exist?
 	}
 	t, err := tail.TailFile(location, tailConfig)
 	if err != nil {
