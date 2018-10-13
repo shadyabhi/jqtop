@@ -24,6 +24,10 @@ var parseErrors *ratecounter.RateCounter
 // ProcessLines reads from "lines" channel
 // and processes them
 func ProcessLines(lines chan *tail.Line) {
+	startProcessLines(lines)
+}
+
+func startProcessLines(lines chan *tail.Line) {
 	filters, err := parseFilters(args.Filters)
 	if err != nil {
 		logrus.Fatalf("Error parsing filters, existing")
