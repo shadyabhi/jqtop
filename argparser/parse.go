@@ -69,7 +69,7 @@ func ParseFields(s string) (*FieldExprs, error) {
 	parser, err := participle.Build(
 		&FieldExprs{},
 		participle.Lexer(customLexer),
-		participle.Unquote(customLexer, "String"),
+		participle.Unquote("String"),
 		participle.UseLookahead(),
 	)
 	if err != nil {
@@ -86,7 +86,7 @@ func ParseFields(s string) (*FieldExprs, error) {
 // ParseFilters parses "s" based on a the grammar described
 // by "FilterExprs"
 func ParseFilters(s string) (*FilterExprs, error) {
-	parser, err := participle.Build(&FilterExprs{}, participle.Lexer(customLexer), participle.Unquote(customLexer, "String"))
+	parser, err := participle.Build(&FilterExprs{}, participle.Lexer(customLexer), participle.Unquote("String"))
 	if err != nil {
 		return &FilterExprs{}, err
 	}
