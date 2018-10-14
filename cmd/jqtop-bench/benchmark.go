@@ -13,6 +13,7 @@ import (
 	randomdata "github.com/shadyabhi/go-randomdata"
 	"github.com/shadyabhi/jqtop"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/text/message"
 )
 
 func linesGenerator(linesChan chan *tail.Line, n int) {
@@ -73,7 +74,8 @@ func BenchmarkJqtop(b *testing.B) {
 		// Average Runtimes
 		tableData[i][1] = fmt.Sprintf("%.2f seconds", float64(avgRunTime[len(nLines)-1])/float64(time.Second))
 		// QPS
-		tableData[i][2] = fmt.Sprintf("%.0f", qps[len(nLines)-1])
+		p := message.NewPrinter(message.MatchLanguage("en"))
+		tableData[i][2] = p.Sprintf("%.0f", qps[len(nLines)-1])
 
 	}
 
