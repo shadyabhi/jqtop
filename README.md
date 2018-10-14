@@ -16,6 +16,7 @@
          * [Show stats for multiple fields](#show-stats-for-multiple-fields)
          * [Filtering](#filtering)
             * [Show top paths with http method as POST.](#show-top-paths-with-http-method-as-post)
+      * [Benchmarks](#benchmarks)
             
 # jqtop
 
@@ -198,3 +199,9 @@ $ ./jqtop -file ./logfile --fields 'paths = regex_capture(request, "[A-Z]+? (.*?
 └──    1: /db_session.init.php
 └──    1: /wp-admins.php
 ```
+
+# Benchmarks
+
+I'm keeping a history of benchmarks as a history.
+
+https://github.com/shadyabhi/jqtop/wiki/Benchmark-log
