@@ -29,6 +29,7 @@ Full manual is available here: https://github.com/shadyabhi/jqtop/wiki#manual
 ```
 go get github.com/shadyabhi/jqtop/cmd/jqtop
 ```
+Or download the latest release for your OS via https://github.com/shadyabhi/jqtop/releases
 
 ## What does it do?
 
