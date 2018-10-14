@@ -8,9 +8,9 @@ import (
 
 func init() {
 	// Defaults
-	args.Interval = 1
-	args.MaxResult = 10
-	args.ParallelProc = 1
+	Args.Interval = 1
+	Args.MaxResult = 10
+	Args.ParallelProc = 1
 
-	parseErrors = ratecounter.NewRateCounter(time.Duration(args.Interval) * time.Second)
+	parseErrors = ratecounter.NewRateCounter(time.Duration(Args.Interval) * time.Second)
 }

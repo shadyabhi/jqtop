@@ -118,7 +118,7 @@ func TestIsMatchFilter(t *testing.T) {
 }
 
 func TestProcessLine(t *testing.T) {
-	args.Interval = 1
+	Args.Interval = 1
 	clearCounters()
 
 	line := []string{
@@ -146,9 +146,9 @@ func TestProcessLine(t *testing.T) {
 
 func TestProcessLines(t *testing.T) {
 	// Set proper args and vars
-	args.Interval = 1
-	args.Fields = "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
-	args.Filters = ""
+	Args.Interval = 1
+	Args.Fields = "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
+	Args.Filters = ""
 	clearCounters()
 
 	linesChan := make(chan *tail.Line)
@@ -171,7 +171,7 @@ func TestProcessLines(t *testing.T) {
 }
 
 func BenchmarkProcessLine(b *testing.B) {
-	args.Interval = 1
+	Args.Interval = 1
 
 	line := []string{
 		`{"cqtn": "23/Sep/2018:02:34:25 -0000", "cqhm": "GET", "cquuc": "http://coolhost.com:1234/admin", "cqhv": "HTTP/1.1", "pssc": "200"}`,

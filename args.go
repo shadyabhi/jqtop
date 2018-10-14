@@ -53,13 +53,14 @@ type Arguments struct {
 	Filters string `arg:"separate" help:"Filters to filter lines that'll be processed"`
 }
 
-var args Arguments
+// Args stores all arguments passed via CLI
+var Args Arguments
 
 // ParseArgs parses args and validates
 func ParseArgs() error {
 	// Defaults are defined in init.go so they
 	// can be used in tests too.
-	p, err := arg.NewParser(arg.Config{}, &args, &described{})
+	p, err := arg.NewParser(arg.Config{}, &Args, &described{})
 	if err != nil {
 		return errors.Wrap(err, "Error setting up parser:")
 	}
@@ -71,13 +72,13 @@ func ParseArgs() error {
 	if err != nil {
 		return errors.Wrap(err, "Error parsing cmdline arguments")
 	}
-	if args.Verbose {
+	if Args.Verbose {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
 	// Convert to seconds
-	args.Interval = 1000 * args.Interval
+	Args.Interval = 1000 * Args.Interval
 
-	logrus.Debugf("Parsed following arguments: %+v", args)
+	logrus.Debugf("Parsed following arguments: %+v", Args)
 	return nil
 }

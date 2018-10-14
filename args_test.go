@@ -8,25 +8,25 @@ import (
 )
 
 func TestParseArgs(t *testing.T) {
-	origArgs := args
+	origArgs := Args
 	os.Args = []string{"jtop", "-c", "-v", "--file", "./tailit", "--fields", "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");", "--filters", "contains(cquuc, \"media.licdn.com\"); contains(cquuc, \"mpr\");"}
 
 	if err := ParseArgs(); err != nil {
 		t.Errorf("Didn't expect error, got error: %s", err)
 	}
 	// Check default values
-	if (args.Interval != 1) && (args.MaxResult != 10) {
+	if (Args.Interval != 1) && (Args.MaxResult != 10) {
 		t.Errorf("Default argument was not set correctly")
 	}
 	if logrus.GetLevel() != logrus.DebugLevel {
 		t.Errorf("Debug was not set!")
 	}
-	if args.Fields != "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");" {
+	if Args.Fields != "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");" {
 		t.Errorf("args.Fields value is not as expected")
 	}
 
 	// Reset args
-	args = origArgs
+	Args = origArgs
 	// We know this was changed in the test
 	logrus.SetLevel(logrus.InfoLevel)
 }

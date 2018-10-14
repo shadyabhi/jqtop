@@ -21,7 +21,7 @@ func Start(outStream io.Writer) {
 
 	linesChan := make(chan *tail.Line)
 
-	if err := setLinesChan(args.File, linesChan); err != nil {
+	if err := setLinesChan(Args.File, linesChan); err != nil {
 		log.Fatalf("Error reading lines, exiting with error: %s", err)
 	}
 
