@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/paulbellamy/ratecounter"
-	"github.com/sirupsen/logrus"
 )
 
 //counterData is used for sorting
@@ -48,7 +47,8 @@ func printCounter(out io.Writer, fieldName string, ss []counterData) {
 	fmt.Fprintln(out, "")
 }
 
-// DumpCounters is a function to print stats to stdout
+// DumpCounters is a function to print stats to io.Writer
+// nil io.Write is stdout
 func DumpCounters(out io.Writer) {
 	if out == nil {
 		out = os.Stdout
@@ -61,16 +61,12 @@ func DumpCounters(out io.Writer) {
 		}
 
 		fmt.Fprintf(out, "✖ Parse error rate: %d\n", parseErrors.Rate())
-		count := 0
 
 		countersMap.mu.RLock()
 		for _, fieldName := range getFieldsInOrder(Config.Fields) {
 			ss := getSortedCounters(countersMap.counters[fieldName])
 			printCounter(out, fieldName, ss)
-			count++
 		}
 		countersMap.mu.RUnlock()
-
-		logrus.Debugf("dumpCounters: Total parsed counters = %d", count)
 	}
 }
