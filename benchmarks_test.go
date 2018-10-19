@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hpcloud/tail"
+	"github.com/paulbellamy/ratecounter"
 	randomdata "github.com/shadyabhi/go-randomdata"
 )
 
@@ -70,6 +71,7 @@ func BenchmarkJqtop(b *testing.B) {
 
 	// Common args
 	Args.Interval = 1000
+	Args.ParallelProc = 1
 
 	Args.Fields = "field_doesnt_exist"
 	runJqtopWithArgs(b, "Get stats for non-existent field", Args, nLines)
@@ -133,4 +135,23 @@ func runJqtopWithArgs(b *testing.B, summary string, args Arguments, nLines []int
 			n, avgRuntimes[i])
 	}
 	fmt.Printf("QPS :: %-10f\n\n", 1000000000*float64(nLines[len(nLines)-1])/float64(avgRuntimes[len(nLines)-1]))
+}
+
+func BenchmarkRateCounterIncr(b *testing.B) {
+	// Focus is to check how Rate Counter performs
+	// because of timers
+
+	// Confirms
+
+	n := 10000
+	counters := make([]*ratecounter.RateCounter, n)
+	for i := 0; i < n; i++ {
+		counters[i] = ratecounter.NewRateCounter(1 * time.Millisecond)
+	}
+
+	for i := 0; i < b.N; i++ {
+		for i := 0; i < n; i++ {
+			counters[i].Incr(1)
+		}
+	}
 }
