@@ -29,12 +29,12 @@ func getSortedCounters(counters map[string]*ratecounter.RateCounter) []counterDa
 		return ss[i].Value > ss[j].Value
 	})
 
-	if Args.MaxResult < 0 {
+	if Config.MaxResult < 0 {
 		return ss
 	}
-	if len(ss) > Args.MaxResult {
+	if len(ss) > Config.MaxResult {
 		//Only show "top" rate
-		return ss[:Args.MaxResult]
+		return ss[:Config.MaxResult]
 	}
 	return ss
 }
@@ -54,9 +54,9 @@ func DumpCounters(out io.Writer) {
 		out = os.Stdout
 	}
 
-	ticker := time.NewTicker(time.Millisecond * time.Duration(Args.Interval))
+	ticker := time.NewTicker(time.Millisecond * time.Duration(Config.Interval))
 	for range ticker.C {
-		if Args.Clearscreen {
+		if Config.Clearscreen {
 			fmt.Println("\033[H\033[2J")
 		}
 
@@ -64,7 +64,7 @@ func DumpCounters(out io.Writer) {
 		count := 0
 
 		countersMap.mu.RLock()
-		for _, fieldName := range getFieldsInOrder(Args.Fields) {
+		for _, fieldName := range getFieldsInOrder(Config.Fields) {
 			ss := getSortedCounters(countersMap.counters[fieldName])
 			printCounter(out, fieldName, ss)
 			count++

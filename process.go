@@ -24,17 +24,17 @@ var parseErrors *ratecounter.RateCounter
 // ProcessLines reads from "lines" channel
 // and processes them
 func ProcessLines(lines chan *tail.Line) {
-	filters, err := parseFilters(Args.Filters)
+	filters, err := parseFilters(Config.Filters)
 	if err != nil {
 		logrus.Fatalf("Error parsing filters, existing")
 	}
-	allFields, err := extractFields(Args.Fields)
+	allFields, err := extractFields(Config.Fields)
 	if err != nil {
 		logrus.Fatalf("Error parsing fields, existing")
 	}
 
 	var wg sync.WaitGroup
-	for i := 0; i < Args.ParallelProc; i++ {
+	for i := 0; i < Config.ParallelProc; i++ {
 		wg.Add(1)
 		go startProcessLines(lines, allFields, filters, &wg)
 	}
@@ -226,6 +226,6 @@ func ensureCounter(field, value string) {
 	}
 	if countersMap.counters[field][value] == nil {
 		countersMap.counters[field][value] =
-			ratecounter.NewRateCounter(time.Duration(Args.Interval) * time.Second)
+			ratecounter.NewRateCounter(time.Duration(Config.Interval) * time.Second)
 	}
 }

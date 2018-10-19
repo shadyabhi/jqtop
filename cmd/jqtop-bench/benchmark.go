@@ -48,7 +48,7 @@ func BenchmarkJqtop(b *testing.B) {
 	}
 
 	// Common jqtop.Args
-	jqtop.Args.Interval = 1000
+	jqtop.Config.Interval = 1000
 
 	tableData := make([][]string, len(benchArgs))
 	for i := range tableData {
@@ -61,9 +61,9 @@ func BenchmarkJqtop(b *testing.B) {
 			logrus.Fatalf("Invalid input for bench test")
 		}
 
-		jqtop.Args.ParallelProc = parallelProcs
-		jqtop.Args.Fields = args[1]
-		jqtop.Args.Filters = args[2]
+		jqtop.Config.ParallelProc = parallelProcs
+		jqtop.Config.Fields = args[1]
+		jqtop.Config.Filters = args[2]
 		summary := args[3]
 		avgRunTime, qps := runJqtopWithArgs(b, summary, nLines)
 

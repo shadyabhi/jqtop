@@ -70,36 +70,36 @@ func BenchmarkJqtop(b *testing.B) {
 	// go DumpCounters(nil)
 
 	// Common args
-	Args.Interval = 1000
-	Args.ParallelProc = 1
+	Config.Interval = 1000
+	Config.ParallelProc = 1
 
-	Args.Fields = "field_doesnt_exist"
-	runJqtopWithArgs(b, "Get stats for non-existent field", Args, nLines)
+	Config.Fields = "field_doesnt_exist"
+	runJqtopWithArgs(b, "Get stats for non-existent field", Config, nLines)
 
-	Args.Fields = "domain"
-	runJqtopWithArgs(b, "Get stats for one field", Args, nLines)
+	Config.Fields = "domain"
+	runJqtopWithArgs(b, "Get stats for one field", Config, nLines)
 
-	Args.Fields = "domain"
-	Args.Filters = "contains(domain, \".com\")"
-	runJqtopWithArgs(b, "Get stats for one field with basic filter (domain contains .com)", Args, nLines)
+	Config.Fields = "domain"
+	Config.Filters = "contains(domain, \".com\")"
+	runJqtopWithArgs(b, "Get stats for one field with basic filter (domain contains .com)", Config, nLines)
 
-	Args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
-	Args.Filters = ""
-	runJqtopWithArgs(b, "Get stats for creating new field via regex", Args, nLines)
+	Config.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
+	Config.Filters = ""
+	runJqtopWithArgs(b, "Get stats for creating new field via regex", Config, nLines)
 
-	Args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
-	Args.Filters = "equals(domain_only, \"google.com\")"
-	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com", Args, nLines)
+	Config.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
+	Config.Filters = "equals(domain_only, \"google.com\")"
+	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com", Config, nLines)
 
-	Args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
-	Args.Filters = "equals(domain_only, \"google.com\")"
-	Args.ParallelProc = 4
-	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com(parallal = 4)", Args, nLines)
+	Config.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
+	Config.Filters = "equals(domain_only, \"google.com\")"
+	Config.ParallelProc = 4
+	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com(parallal = 4)", Config, nLines)
 
-	Args.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
-	Args.Filters = "equals(domain_only, \"google.com\")"
-	Args.ParallelProc = 12
-	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com(parallal = 12)", Args, nLines)
+	Config.Fields = "domain_only = regex_capture(domain, \"(.*)/\")"
+	Config.Filters = "equals(domain_only, \"google.com\")"
+	Config.ParallelProc = 12
+	runJqtopWithArgs(b, "Get stats for creating new field via regex and filter only google.com(parallal = 12)", Config, nLines)
 }
 
 func runJqtopWithArgs(b *testing.B, summary string, args Arguments, nLines []int) {
