@@ -26,10 +26,11 @@ Full manual is available here: https://github.com/shadyabhi/jqtop/wiki#manual
 
 ## Installation
 
+For now, we don't have rpm/deb packages. Download the latest release binary for your OS at https://github.com/shadyabhi/jqtop/releases.
+
 ```
 go get github.com/shadyabhi/jqtop/cmd/jqtop
 ```
-Or download the latest release for your OS via https://github.com/shadyabhi/jqtop/releases
 
 ## What does it do?
 
