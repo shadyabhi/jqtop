@@ -141,8 +141,6 @@ func BenchmarkRateCounterIncr(b *testing.B) {
 	// Focus is to check how Rate Counter performs
 	// because of timers
 
-	// Confirms
-
 	n := 10000
 	counters := make([]*ratecounter.RateCounter, n)
 	for i := 0; i < n; i++ {
@@ -154,4 +152,47 @@ func BenchmarkRateCounterIncr(b *testing.B) {
 			counters[i].Incr(1)
 		}
 	}
+}
+
+func BenchmarkAtomicIncr(b *testing.B) {
+	var counter ratecounter.Counter
+
+	b.Run("No goroutines", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			counter.Incr(1)
+		}
+	})
+	b.Run("With goroutines", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			go func() {
+				counter.Incr(1)
+			}()
+		}
+	})
+}
+
+func BenchmarkMutexIncr(b *testing.B) {
+	var counter struct {
+		c int64
+		sync.Mutex
+	}
+
+	b.Run("No goroutines", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			counter.Lock()
+			counter.c = counter.c + 1
+			counter.Unlock()
+		}
+
+	})
+	b.Run("With goroutines", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			go func() {
+				counter.Lock()
+				counter.c = counter.c + 1
+				counter.Unlock()
+			}()
+		}
+
+	})
 }
