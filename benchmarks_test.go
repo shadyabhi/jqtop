@@ -155,44 +155,61 @@ func BenchmarkRateCounterIncr(b *testing.B) {
 }
 
 func BenchmarkAtomicIncr(b *testing.B) {
-	var counter ratecounter.Counter
+	n := 10000
+	var counters = make([]ratecounter.Counter, n)
 
 	b.Run("No goroutines", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			counter.Incr(1)
+			for i := 0; i < n; i++ {
+				counters[i].Incr(1)
+			}
 		}
 	})
 	b.Run("With goroutines", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			go func() {
-				counter.Incr(1)
-			}()
+			var wg sync.WaitGroup
+			wg.Add(n)
+			for j := 0; i < n; i++ {
+				go func() {
+					counters[j].Incr(1)
+					wg.Done()
+				}()
+			}
 		}
 	})
 }
 
 func BenchmarkMutexIncr(b *testing.B) {
-	var counter struct {
+	n := 10000
+	type counter struct {
 		c int64
 		sync.Mutex
 	}
+	var counters = make([]counter, n)
 
 	b.Run("No goroutines", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			counter.Lock()
-			counter.c = counter.c + 1
-			counter.Unlock()
+			for i := 0; i < n; i++ {
+				counters[i].Lock()
+				counters[i].c = counters[i].c + 1
+				counters[i].Unlock()
+
+			}
 		}
 
 	})
 	b.Run("With goroutines", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
+			var wg sync.WaitGroup
+			wg.Add(n)
 			go func() {
-				counter.Lock()
-				counter.c = counter.c + 1
-				counter.Unlock()
+				for i := 0; i < n; i++ {
+					counters[i].Lock()
+					counters[i].c = counters[i].c + 1
+					counters[i].Unlock()
+				}
+				wg.Done()
 			}()
 		}
-
 	})
 }
