@@ -6,17 +6,20 @@ import (
 	"regexp"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/hpcloud/tail"
 	"github.com/paulbellamy/ratecounter"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+
+	metrics "github.com/rcrowley/go-metrics"
 )
 
-var countersMap struct {
-	counters map[string]map[string]*ratecounter.RateCounter
-	mu       sync.RWMutex
+// countersSlice stores registries for various fields
+// We use a slice so we can find the registry without introducing locks (eg, using map)
+var countersSlice struct {
+	counters []metrics.Registry
+	sync.RWMutex
 }
 
 var parseErrors *ratecounter.RateCounter
@@ -24,15 +27,23 @@ var parseErrors *ratecounter.RateCounter
 // ProcessLines reads from "lines" channel
 // and processes them
 func ProcessLines(lines chan *tail.Line) {
+	// Init stuff
+	// Filters
 	filters, err := parseFilters(Config.Filters)
 	if err != nil {
 		logrus.Fatalf("Error parsing filters, existing")
 	}
+
+	// Fields
 	allFields, err := extractFields(Config.Fields)
 	if err != nil {
 		logrus.Fatalf("Error parsing fields, existing")
 	}
 
+	// Counters
+	countersSlice.counters = initFieldCounters(allFields)
+
+	// Go Routines
 	var wg sync.WaitGroup
 	for i := 0; i < Config.ParallelProc; i++ {
 		wg.Add(1)
@@ -131,17 +142,18 @@ func isMatchFilter(line string, f filter, allFields Fields) bool {
 // processLine process various kind of lines
 func processLine(line string, allFields Fields) {
 	// Simple fields
-	processSimpleFields(line, allFields.SimpleFields)
+	processSimpleFields(line, allFields)
 
 	// Complex fields
-	if err := processComplexFields(line, allFields.DerivedFields); err != nil {
+	if err := processComplexFields(line, allFields); err != nil {
 		parseErrors.Incr(1)
 	}
 }
 
 // processSimpleFields works on fields that
 // don't need modification
-func processSimpleFields(line string, fields []string) {
+func processSimpleFields(line string, allFields Fields) {
+	fields := allFields.SimpleFields
 	values := make(map[string]string)
 	for _, f := range fields {
 		value, exists := getValue(line, f)
@@ -150,7 +162,7 @@ func processSimpleFields(line string, fields []string) {
 		}
 		values[f] = value
 	}
-	processValues(values)
+	processValues(values, allFields)
 }
 
 func getComplexFieldValue(fieldName string, line string, fields map[string]*derivedField) (string, error) {
@@ -171,7 +183,9 @@ func getComplexFieldValue(fieldName string, line string, fields map[string]*deri
 
 // processComplexFields parses fields whose values
 // are derived from other fields
-func processComplexFields(line string, fields map[string]*derivedField) error {
+func processComplexFields(line string, allFields Fields) error {
+	fields := allFields.DerivedFields
+
 	values := make(map[string]string)
 	for k, v := range fields {
 		value, err := getComplexFieldValue(k, line, fields)
@@ -180,17 +194,18 @@ func processComplexFields(line string, fields map[string]*derivedField) error {
 		}
 		values[v.NewField] = value
 	}
-	processValues(values)
+	processValues(values, allFields)
 
 	return nil
 }
 
+// getValue parses field "f" from json "s"
 func getValue(s string, f string) (string, bool) {
 	result := gjson.Get(s, f)
 	return result.String(), result.Exists()
 }
 
-// findValue uses regex "regex" and returns the match, else error
+// deriveValue uses regex "regex" and returns the match, else error
 func deriveValue(f *derivedField, origValue string) (string, error) {
 	// Currently, only supporting regex_capture
 	r, err := regexp.Compile(f.Args[1])
@@ -205,27 +220,39 @@ func deriveValue(f *derivedField, origValue string) (string, error) {
 }
 
 // processValues reads values and updates counters
-func processValues(values map[string]string) {
+// TODO: Get rid of this function
+func processValues(values map[string]string, allFields Fields) {
 	for field, value := range values {
-		countersMap.mu.Lock()
+		// Increment new counter
+		incrCounter(field, value, allFields)
 
-		ensureCounter(field, value)
-		countersMap.counters[field][value].Incr(1)
-
-		countersMap.mu.Unlock()
 	}
 }
 
-// createCounters initializes config.counters for keeping track of fields
-func ensureCounter(field, value string) {
-	if countersMap.counters == nil {
-		countersMap.counters = make(map[string]map[string]*ratecounter.RateCounter)
+// getFieldIndex gets the index of Field
+func getFieldIndex(allFields Fields, fName string) (index int) {
+	for i, field := range allFields.FieldsInOrder {
+		if field == fName {
+			return i
+		}
 	}
-	if countersMap.counters[field] == nil {
-		countersMap.counters[field] = make(map[string]*ratecounter.RateCounter)
+	return -1
+}
+
+// initFieldCounters gets slice of registry of counters for all fields
+func initFieldCounters(allFields Fields) (registrySlice []metrics.Registry) {
+	countersSlice := make([]metrics.Registry, len(allFields.FieldsInOrder))
+
+	for i := range allFields.FieldsInOrder {
+		// c := registry.GetOrRegister(field, metrics.NewCounter).(*metrics.StandardCounter)
+		countersSlice[i] = metrics.NewRegistry()
 	}
-	if countersMap.counters[field][value] == nil {
-		countersMap.counters[field][value] =
-			ratecounter.NewRateCounter(time.Duration(Config.Interval) * time.Second)
-	}
+	return countersSlice
+}
+
+func incrCounter(field string, value string, allFields Fields) {
+	// TODO(perf): cache this per goroutine
+	index := getFieldIndex(allFields, field)
+	c := countersSlice.counters[index].GetOrRegister(value, metrics.NewCounter).(*metrics.StandardCounter)
+	c.Inc(1)
 }

@@ -1,36 +1,48 @@
 package jqtop
 
 import (
+	"reflect"
 	"testing"
+
+	"github.com/rcrowley/go-metrics"
+	"github.com/sirupsen/logrus"
 )
 
-func populateCounterData() {
-	clearCounters()
+func Test_getSortedCounters(t *testing.T) {
+	// Setup
+	// Fields
+	fieldsStr := "cquuc"
+	allFields, err := extractFields(fieldsStr)
+	if err != nil {
+		logrus.Fatalf("Error parsing fields, existing")
+	}
 
-	ensureCounter("key", "field_value")
-	countersMap.counters["key"]["field_value"].Incr(1)
+	fMap := getFieldIndexMap(allFields)
+	// Holds last value (avoid timers)
+	// Array of map[fieldname](counterValue)
+	var lastCounters []map[string]int64
+	initLastCounters(&lastCounters, allFields)
+	countersSlice.counters = initFieldCounters(allFields)
 
-	ensureCounter("key", "field_value2")
-	countersMap.counters["key"]["field_value2"].Incr(1)
-	countersMap.counters["key"]["field_value2"].Incr(1)
+	r := metrics.NewRegistry()
+	c1 := r.GetOrRegister("c1", metrics.NewCounter).(*metrics.StandardCounter)
+	c1.Inc(30)
+	c2 := r.GetOrRegister("c2", metrics.NewCounter).(*metrics.StandardCounter)
+	c2.Inc(20)
+	c3 := r.GetOrRegister("c3", metrics.NewCounter).(*metrics.StandardCounter)
+	c3.Inc(1)
+	c4 := r.GetOrRegister("c4", metrics.NewCounter).(*metrics.StandardCounter)
+	c4.Inc(5)
+	countersSlice.counters[0] = r
 
-	ensureCounter("key", "field_value3")
-	countersMap.counters["key"]["field_value3"].Incr(1)
-	countersMap.counters["key"]["field_value3"].Incr(1)
-	countersMap.counters["key"]["field_value3"].Incr(1)
-
-	// For testing sorting
-	ensureCounter("1_key", "field_value3")
-	ensureCounter("2_key", "field_value3")
-}
-
-func TestGetSortedCounters(t *testing.T) {
-	populateCounterData()
-
-	sorted := getSortedCounters(countersMap.counters["key"])
-
-	// field_value3 has the highest count, it should be first
-	if sorted[0].Key != "field_value3" {
-		t.Errorf("Expected field_value3 to be the first element, got %s", sorted[0].Key)
+	ss := getSortedCounters(&fMap, "cquuc", &lastCounters)
+	expected := []sortedCounters{
+		{"c1", 30},
+		{"c2", 20},
+		{"c4", 5},
+		{"c3", 1},
+	}
+	if !reflect.DeepEqual(ss, expected) {
+		t.Errorf("Sorted counters returned have wrong order, returned: %#v, expected: %#v", ss, expected)
 	}
 }

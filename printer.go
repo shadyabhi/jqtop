@@ -8,7 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/paulbellamy/ratecounter"
+	"github.com/rcrowley/go-metrics"
+	"github.com/sirupsen/logrus"
 )
 
 //counterData is used for sorting
@@ -17,13 +18,20 @@ type counterData struct {
 	Value int64
 }
 
-// getSortedCounters takes counters map and returns a slice in decreasing order
-// of ratecounter.RateCounter value
-func getSortedCounters(counters map[string]*ratecounter.RateCounter) []counterData {
-	var ss []counterData
-	for k, counter := range counters {
-		ss = append(ss, counterData{k, counter.Rate()})
-	}
+//counters is used for sorting
+type sortedCounters struct {
+	Key   string
+	Value int64
+}
+
+func getSortedCounters(fMap *map[string]int, fName string, lastCounters *[]map[string]int64) (ss []sortedCounters) {
+	r := countersSlice.counters[(*fMap)[fName]]
+	r.Each(func(name string, i interface{}) {
+		c := i.(*metrics.StandardCounter)
+		rate := c.Count() - (*lastCounters)[(*fMap)[fName]][name]
+		(*lastCounters)[(*fMap)[fName]][name] = c.Count()
+		ss = append(ss, sortedCounters{name, rate})
+	})
 	sort.Slice(ss, func(i, j int) bool {
 		return ss[i].Value > ss[j].Value
 	})
@@ -32,13 +40,12 @@ func getSortedCounters(counters map[string]*ratecounter.RateCounter) []counterDa
 		return ss
 	}
 	if len(ss) > Config.MaxResult {
-		//Only show "top" rate
 		return ss[:Config.MaxResult]
 	}
 	return ss
 }
 
-func printCounter(out io.Writer, fieldName string, ss []counterData) {
+func printCounter(out io.Writer, fieldName string, ss []sortedCounters) {
 	fmt.Fprintf(out, "➤ %s\n", fieldName)
 	indent := "└──"
 	for _, counterData := range ss {
@@ -54,6 +61,18 @@ func DumpCounters(out io.Writer) {
 		out = os.Stdout
 	}
 
+	// Fields
+	allFields, err := extractFields(Config.Fields)
+	if err != nil {
+		logrus.Fatalf("Error parsing fields, existing")
+	}
+
+	fMap := getFieldIndexMap(allFields)
+	// Holds last value (avoid timers)
+	// Array of map[fieldname](counterValue)
+	var lastCounters []map[string]int64
+	initLastCounters(&lastCounters, allFields)
+
 	ticker := time.NewTicker(time.Millisecond * time.Duration(Config.Interval))
 	for range ticker.C {
 		if Config.Clearscreen {
@@ -62,11 +81,27 @@ func DumpCounters(out io.Writer) {
 
 		fmt.Fprintf(out, "✖ Parse error rate: %d\n", parseErrors.Rate())
 
-		countersMap.mu.RLock()
+		// countersMap.mu.RLock()
 		for _, fieldName := range getFieldsInOrder(Config.Fields) {
-			ss := getSortedCounters(countersMap.counters[fieldName])
+			// ss := getSortedCounters(countersMap.counters[fieldName])
+			ss := getSortedCounters(&fMap, fieldName, &lastCounters)
 			printCounter(out, fieldName, ss)
 		}
-		countersMap.mu.RUnlock()
+		// countersMap.mu.RUnlock()
+	}
+}
+
+func getFieldIndexMap(allFields Fields) (m map[string]int) {
+	m = make(map[string]int)
+	for i, v := range allFields.FieldsInOrder {
+		m[v] = i
+	}
+	return m
+}
+
+func initLastCounters(counters *[]map[string]int64, allFields Fields) {
+	*counters = make([]map[string]int64, len(allFields.FieldsInOrder))
+	for i := range allFields.FieldsInOrder {
+		(*counters)[i] = make(map[string]int64, 0)
 	}
 }

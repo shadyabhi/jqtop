@@ -45,6 +45,7 @@ func BenchmarkJqtop(b *testing.B) {
 		{"1", "domain_only = regex_capture(domain, \"(.*)/\")", "equals(domain_only, \"google.com\")", "Parse one derived field with basic filter (domain equals google.com)"},
 		{"4", "domain_only = regex_capture(domain, \"(.*)/\")", "equals(domain_only, \"google.com\")", "Parse one derived field with basic filter (domain equals google.com)"},
 		{"12", "domain_only = regex_capture(domain, \"(.*)/\")", "equals(domain_only, \"google.com\")", "Parse one derived field with basic filter (domain equals google.com)"},
+		{"12", "code; ttms; domain_only = regex_capture(domain, \"(.*)/\")", "equals(domain_only, \"google.com\")", "Parse multiple fields(simple/derived) with basic filter (domain equals google.com)"},
 	}
 
 	// Common jqtop.Args
