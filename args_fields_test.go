@@ -20,6 +20,7 @@ func TestGetFieldsInOrder(t *testing.T) {
 func TestExtractFields(t *testing.T) {
 	fieldsStr := "cquuc; host_with_protocol = regex_capture(cquuc, \"(.*?://.*?)/\");"
 	allFields, err := extractFields(fieldsStr)
+	t.Logf("Extracted fields\nFROM: %s\nGOT: %#v", fieldsStr, allFields)
 	if err != nil {
 		t.Errorf("Error parsinga valid field string")
 	}
@@ -32,6 +33,7 @@ func TestExtractFields(t *testing.T) {
 	expectedValue := Fields{
 		SimpleFields:  []string{"cquuc"},
 		DerivedFields: derivedFields,
+		FieldsInOrder: []string{"cquuc", "host_with_protocol"},
 	}
 	if !reflect.DeepEqual(allFields, expectedValue) {
 		t.Errorf("allFields struct was equal to what was expected")
@@ -42,5 +44,4 @@ func TestExtractFields(t *testing.T) {
 	if err == nil {
 		t.Errorf("Didn't throw error for an invalid field string")
 	}
-
 }

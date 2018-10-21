@@ -16,6 +16,7 @@ type derivedField struct {
 type Fields struct {
 	SimpleFields  []string
 	DerivedFields map[string]*derivedField
+	FieldsInOrder []string
 }
 
 func getFieldsInOrder(s string) (allFields []string) {
@@ -30,9 +31,9 @@ func getFieldsInOrder(s string) (allFields []string) {
 	return allFields
 }
 
-func extractFields(s string) (Fields, error) {
-	allFields := Fields{}
+func extractFields(s string) (allFields Fields, err error) {
 	simpleFields := []string{}
+	fieldsInOrder := []string{}
 	derivedFields := make(map[string]*derivedField)
 
 	myAST, err := argparser.ParseFields(s)
@@ -43,8 +44,11 @@ func extractFields(s string) (Fields, error) {
 	for _, expr := range myAST.Exprs {
 		if expr.Assignment == nil {
 			// Simple field
-			simpleFields = append(simpleFields, *expr.Expr.Term.Variable)
+			f := *expr.Expr.Term.Variable
+			simpleFields = append(simpleFields, f)
+			fieldsInOrder = append(fieldsInOrder, f)
 		} else {
+			fieldsInOrder = append(fieldsInOrder, expr.Assignment.Variable)
 			// Complex field
 			// TODO: Convert to function
 			args := []string{}
@@ -62,6 +66,7 @@ func extractFields(s string) (Fields, error) {
 	allFields = Fields{
 		SimpleFields:  simpleFields,
 		DerivedFields: derivedFields,
+		FieldsInOrder: fieldsInOrder,
 	}
 	return allFields, nil
 }
