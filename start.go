@@ -3,9 +3,12 @@ package jqtop
 import (
 	"bufio"
 	"io"
+	"net/http"
 	"os"
 
 	"github.com/pkg/errors"
+
+	_ "net/http/pprof" // For profiling
 
 	"github.com/hpcloud/tail"
 	log "github.com/sirupsen/logrus"
@@ -15,6 +18,10 @@ import (
 func Start(outStream io.Writer) {
 	if err := ParseArgs(); err != nil {
 		log.Fatalf("Error parsing cmdline args: %s", err)
+	}
+
+	if err := startProfiling(Config.Prof); err != nil {
+		log.Fatalf("Error while enabling profiling: %s", err)
 	}
 
 	go DumpCounters(outStream)
@@ -66,4 +73,11 @@ func tailF(linesChan chan *tail.Line, filepath string) error {
 		}
 	}()
 	return nil
+}
+
+func startProfiling(serverAddr string) (err error) {
+	go func() {
+		err = http.ListenAndServe(serverAddr, nil)
+	}()
+	return err
 }
