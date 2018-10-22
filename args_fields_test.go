@@ -34,6 +34,10 @@ func TestExtractFields(t *testing.T) {
 		SimpleFields:  []string{"cquuc"},
 		DerivedFields: derivedFields,
 		FieldsInOrder: []string{"cquuc", "host_with_protocol"},
+		FieldsIndexMap: map[string]int{
+			"cquuc":              0,
+			"host_with_protocol": 1,
+		},
 	}
 	if !reflect.DeepEqual(allFields, expectedValue) {
 		t.Errorf("allFields struct was equal to what was expected")

@@ -15,7 +15,7 @@ import (
 	metrics "github.com/rcrowley/go-metrics"
 )
 
-// countersSlice stores registries for various fields
+// countersSlice stores registries (go-metrics) for various fields
 // We use a slice so we can find the registry without introducing locks (eg, using map)
 var countersSlice struct {
 	counters []metrics.Registry
@@ -47,12 +47,12 @@ func ProcessLines(lines chan *tail.Line) {
 	var wg sync.WaitGroup
 	for i := 0; i < Config.ParallelProc; i++ {
 		wg.Add(1)
-		go startProcessLines(lines, allFields, filters, &wg)
+		go startProcessLines(lines, &allFields, filters, &wg)
 	}
 	wg.Wait()
 }
 
-func startProcessLines(lines chan *tail.Line, allFields Fields, filters []filter, wg *sync.WaitGroup) {
+func startProcessLines(lines chan *tail.Line, allFields *Fields, filters []filter, wg *sync.WaitGroup) {
 	defer wg.Done()
 	logrus.Debugf("Filters to apply: %+v", filters)
 
@@ -67,7 +67,7 @@ func startProcessLines(lines chan *tail.Line, allFields Fields, filters []filter
 }
 
 // isMatching filters line based on []filters provided
-func isMatching(line string, filters []filter, allFields Fields) bool {
+func isMatching(line string, filters []filter, allFields *Fields) bool {
 	if len(filters) == 0 {
 		return true
 	}
@@ -98,7 +98,7 @@ func isMatching(line string, filters []filter, allFields Fields) bool {
 }
 
 // getAnyValue gets value of a field (simple or complex)
-func getAnyValue(fieldName string, line string, allFields Fields) (contents string, err error) {
+func getAnyValue(fieldName string, line string, allFields *Fields) (contents string, err error) {
 	contents, exists := getValue(line, fieldName)
 	if !exists {
 		// Let's try complex fields
@@ -113,7 +113,7 @@ func getAnyValue(fieldName string, line string, allFields Fields) (contents stri
 
 // isMatchFilter decides if a line should be filtered or not
 // based on the "filte" provided
-func isMatchFilter(line string, f filter, allFields Fields) bool {
+func isMatchFilter(line string, f filter, allFields *Fields) bool {
 	// Get value of field
 	contents, err := getAnyValue(f.Args[0], line, allFields)
 	if err != nil {
@@ -140,7 +140,7 @@ func isMatchFilter(line string, f filter, allFields Fields) bool {
 }
 
 // processLine process various kind of lines
-func processLine(line string, allFields Fields) {
+func processLine(line string, allFields *Fields) {
 	// Simple fields
 	processSimpleFields(line, allFields)
 
@@ -152,7 +152,7 @@ func processLine(line string, allFields Fields) {
 
 // processSimpleFields works on fields that
 // don't need modification
-func processSimpleFields(line string, allFields Fields) {
+func processSimpleFields(line string, allFields *Fields) {
 	fields := allFields.SimpleFields
 	values := make(map[string]string)
 	for _, f := range fields {
@@ -183,7 +183,7 @@ func getComplexFieldValue(fieldName string, line string, fields map[string]*deri
 
 // processComplexFields parses fields whose values
 // are derived from other fields
-func processComplexFields(line string, allFields Fields) error {
+func processComplexFields(line string, allFields *Fields) error {
 	fields := allFields.DerivedFields
 
 	values := make(map[string]string)
@@ -220,11 +220,11 @@ func deriveValue(f *derivedField, origValue string) (string, error) {
 }
 
 // processValues reads values and updates counters
-// TODO: Get rid of this function
-func processValues(values map[string]string, allFields Fields) {
+func processValues(values map[string]string, allFields *Fields) {
 	for field, value := range values {
 		// Increment new counter
-		incrCounter(field, value, allFields)
+		countersSlice.counters[allFields.FieldsIndexMap[field]].GetOrRegister(
+			value, metrics.NewCounter).(*metrics.StandardCounter).Inc(1)
 
 	}
 }
@@ -242,17 +242,8 @@ func getFieldIndex(allFields Fields, fName string) (index int) {
 // initFieldCounters gets slice of registry of counters for all fields
 func initFieldCounters(allFields Fields) (registrySlice []metrics.Registry) {
 	countersSlice := make([]metrics.Registry, len(allFields.FieldsInOrder))
-
 	for i := range allFields.FieldsInOrder {
-		// c := registry.GetOrRegister(field, metrics.NewCounter).(*metrics.StandardCounter)
 		countersSlice[i] = metrics.NewRegistry()
 	}
 	return countersSlice
-}
-
-func incrCounter(field string, value string, allFields Fields) {
-	// TODO(perf): cache this per goroutine
-	index := getFieldIndex(allFields, field)
-	c := countersSlice.counters[index].GetOrRegister(value, metrics.NewCounter).(*metrics.StandardCounter)
-	c.Inc(1)
 }

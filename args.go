@@ -43,7 +43,6 @@ Field functions:
 // Arguments describes the argument that the program receives
 type Arguments struct {
 	File         string  `arg:"" help:"Path to file that will be read"`
-	Prof         string  `arg:"" help:"serverAddr (eg. 0.0.0.0:6060) for profiling"`
 	Interval     float64 `arg:"-i" help:"Interval at which stats are calculated"`
 	MaxResult    int     `arg:"-m" help:"Max results to show"`
 	Verbose      bool    `arg:"-v"`

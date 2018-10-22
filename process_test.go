@@ -51,14 +51,14 @@ func TestIsMatching(t *testing.T) {
 			true,
 		},
 	}
-	r := isMatching(`{"foo": "i am awesome"}`, []filter{}, Fields{})
+	r := isMatching(`{"foo": "i am awesome"}`, []filter{}, &Fields{})
 	if !r {
 		t.Errorf("No filters provided but line was filtered")
 	}
 
 	for i, tt := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			r := isMatching(tt.json, []filter{*tt.f}, Fields{})
+			r := isMatching(tt.json, []filter{*tt.f}, &Fields{})
 			if r != tt.expected {
 				t.Errorf("Unexpected return from isMatchFilter. Input: %+v", tt)
 			}
@@ -115,7 +115,7 @@ func TestIsMatchFilter(t *testing.T) {
 	}
 	for i, tt := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			r := isMatchFilter(tt.json, *tt.f, Fields{})
+			r := isMatchFilter(tt.json, *tt.f, &Fields{})
 			if r != tt.expected {
 				t.Errorf("Unexpected return from isMatchFilter. Input: %+v", tt)
 			}
@@ -147,7 +147,7 @@ func TestProcessLine(t *testing.T) {
 	// This is initialized elsewhere, needed for test only
 	countersSlice.counters = initFieldCounters(allFields)
 
-	processLine(line[0], allFields)
+	processLine(line[0], &allFields)
 
 	if len(countersSlice.counters) != 5 {
 		t.Errorf("processLine didn't parse all fields\n. Current counters: %+v", countersSlice.counters)
@@ -201,7 +201,7 @@ func BenchmarkProcessLine(b *testing.B) {
 	}
 
 	for n := 0; n < b.N; n++ {
-		processLine(line[0], allFields)
+		processLine(line[0], &allFields)
 	}
 }
 

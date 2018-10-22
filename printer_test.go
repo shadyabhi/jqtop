@@ -17,7 +17,7 @@ func Test_getSortedCounters(t *testing.T) {
 		logrus.Fatalf("Error parsing fields, existing")
 	}
 
-	fMap := getFieldIndexMap(allFields)
+	fMap := getFieldIndexMap(allFields.FieldsInOrder)
 	// Holds last value (avoid timers)
 	// Array of map[fieldname](counterValue)
 	var lastCounters []map[string]int64

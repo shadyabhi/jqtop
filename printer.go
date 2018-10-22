@@ -67,7 +67,7 @@ func DumpCounters(out io.Writer) {
 		logrus.Fatalf("Error parsing fields, existing")
 	}
 
-	fMap := getFieldIndexMap(allFields)
+	fMap := getFieldIndexMap(allFields.FieldsInOrder)
 	// Holds last value (avoid timers)
 	// Array of map[fieldname](counterValue)
 	var lastCounters []map[string]int64
@@ -89,14 +89,6 @@ func DumpCounters(out io.Writer) {
 		}
 		// countersMap.mu.RUnlock()
 	}
-}
-
-func getFieldIndexMap(allFields Fields) (m map[string]int) {
-	m = make(map[string]int)
-	for i, v := range allFields.FieldsInOrder {
-		m[v] = i
-	}
-	return m
 }
 
 func initLastCounters(counters *[]map[string]int64, allFields Fields) {

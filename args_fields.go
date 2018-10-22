@@ -14,9 +14,10 @@ type derivedField struct {
 
 // Fields contains parsed fields that are sent
 type Fields struct {
-	SimpleFields  []string
-	DerivedFields map[string]*derivedField
-	FieldsInOrder []string
+	SimpleFields   []string
+	DerivedFields  map[string]*derivedField
+	FieldsInOrder  []string
+	FieldsIndexMap map[string]int
 }
 
 func getFieldsInOrder(s string) (allFields []string) {
@@ -63,10 +64,21 @@ func extractFields(s string) (allFields Fields, err error) {
 		}
 	}
 
+	fMap := getFieldIndexMap(fieldsInOrder)
 	allFields = Fields{
-		SimpleFields:  simpleFields,
-		DerivedFields: derivedFields,
-		FieldsInOrder: fieldsInOrder,
+		SimpleFields:   simpleFields,
+		DerivedFields:  derivedFields,
+		FieldsInOrder:  fieldsInOrder,
+		FieldsIndexMap: fMap,
 	}
+
 	return allFields, nil
+}
+
+func getFieldIndexMap(fieldsInOrder []string) (m map[string]int) {
+	m = make(map[string]int)
+	for i, v := range fieldsInOrder {
+		m[v] = i
+	}
+	return m
 }

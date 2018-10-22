@@ -144,8 +144,9 @@ func TestStart(t *testing.T) {
 
 	case <-tick:
 		countersSlice.RLock()
+		defer countersSlice.RUnlock()
+
 		if countersSlice.counters != nil {
-			countersSlice.RUnlock()
 			break
 		}
 	}
