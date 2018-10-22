@@ -30,17 +30,17 @@ func Test_getSortedCounters(t *testing.T) {
 	c2 := r.GetOrRegister("c2", metrics.NewCounter).(*metrics.StandardCounter)
 	c2.Inc(20)
 	c3 := r.GetOrRegister("c3", metrics.NewCounter).(*metrics.StandardCounter)
-	c3.Inc(1)
+	c3.Inc(24)
 	c4 := r.GetOrRegister("c4", metrics.NewCounter).(*metrics.StandardCounter)
-	c4.Inc(5)
+	c4.Inc(26)
 	countersSlice.counters[0] = r
 
 	ss := getSortedCounters(&fMap, "cquuc", &lastCounters)
 	expected := []sortedCounters{
-		{"c1", 30},
-		{"c2", 20},
-		{"c4", 5},
-		{"c3", 1},
+		{"c1", 30, 30},
+		{"c4", 26, 26},
+		{"c3", 24, 24},
+		{"c2", 20, 20},
 	}
 	if !reflect.DeepEqual(ss, expected) {
 		t.Errorf("Sorted counters returned have wrong order, returned: %#v, expected: %#v", ss, expected)

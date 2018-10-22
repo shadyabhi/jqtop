@@ -12,44 +12,51 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//counterData is used for sorting
-type counterData struct {
-	Key   string
-	Value int64
-}
-
 //counters is used for sorting
 type sortedCounters struct {
-	Key   string
-	Value int64
+	Name       string
+	Value      int64
+	Percentage float64
 }
 
 func getSortedCounters(fMap *map[string]int, fName string, lastCounters *[]map[string]int64) (ss []sortedCounters) {
 	r := countersSlice.counters[(*fMap)[fName]]
+	var counters []sortedCounters
+
+	// Sort
+	var total float64
 	r.Each(func(name string, i interface{}) {
 		c := i.(*metrics.StandardCounter)
 		rate := c.Count() - (*lastCounters)[(*fMap)[fName]][name]
 		(*lastCounters)[(*fMap)[fName]][name] = c.Count()
-		ss = append(ss, sortedCounters{name, rate})
+		counters = append(counters, sortedCounters{name, rate, 0})
+		total += float64(rate)
 	})
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
+	sort.Slice(counters, func(i, j int) bool {
+		return counters[i].Value > counters[j].Value
 	})
 
+	// Get percentages
+	for i := range counters {
+		counters[i].Percentage = float64(counters[i].Value) / total * 100
+	}
+
+	// Return subset if needed
 	if Config.MaxResult < 0 {
-		return ss
+		return counters
 	}
-	if len(ss) > Config.MaxResult {
-		return ss[:Config.MaxResult]
+	if len(counters) > Config.MaxResult {
+		return counters[:Config.MaxResult]
 	}
-	return ss
+	return counters
 }
 
 func printCounter(out io.Writer, fieldName string, ss []sortedCounters) {
 	fmt.Fprintf(out, "➤ %s\n", fieldName)
 	indent := "└──"
 	for _, counterData := range ss {
-		fmt.Fprintf(out, "%s %4s: %s\n", indent, strconv.FormatInt(counterData.Value, 10), counterData.Key)
+		fmt.Fprintf(out, "%s %4s [%.1f%%]: %s\n",
+			indent, strconv.FormatInt(counterData.Value, 10), counterData.Percentage, counterData.Name)
 	}
 	fmt.Fprintln(out, "")
 }
