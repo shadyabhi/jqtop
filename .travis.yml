@@ -10,6 +10,7 @@ install:
     - go get github.com/pkg/errors
     - go get github.com/shadyabhi/go-randomdata
     - go get github.com/struCoder/pidusage
+    - go get github.com/rcrowley/go-metrics
 
 go:
   - 1.8
