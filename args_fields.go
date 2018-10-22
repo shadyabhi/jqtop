@@ -49,9 +49,8 @@ func extractFields(s string) (allFields Fields, err error) {
 			simpleFields = append(simpleFields, f)
 			fieldsInOrder = append(fieldsInOrder, f)
 		} else {
-			fieldsInOrder = append(fieldsInOrder, expr.Assignment.Variable)
 			// Complex field
-			// TODO: Convert to function
+			fieldsInOrder = append(fieldsInOrder, expr.Assignment.Variable)
 			args := []string{}
 			for i := range expr.Assignment.Expr.Function.Args {
 				if i == 0 {
