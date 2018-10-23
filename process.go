@@ -41,7 +41,9 @@ func ProcessLines(lines chan *tail.Line) {
 	}
 
 	// Counters
+	countersSlice.Lock()
 	countersSlice.counters = initFieldCounters(allFields)
+	countersSlice.Unlock()
 
 	// Go Routines
 	var wg sync.WaitGroup
@@ -241,9 +243,9 @@ func getFieldIndex(allFields Fields, fName string) (index int) {
 
 // initFieldCounters gets slice of registry of counters for all fields
 func initFieldCounters(allFields Fields) (registrySlice []metrics.Registry) {
-	countersSlice := make([]metrics.Registry, len(allFields.FieldsInOrder))
+	cSlice := make([]metrics.Registry, len(allFields.FieldsInOrder))
 	for i := range allFields.FieldsInOrder {
-		countersSlice[i] = metrics.NewRegistry()
+		cSlice[i] = metrics.NewRegistry()
 	}
-	return countersSlice
+	return cSlice
 }
