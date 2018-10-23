@@ -27,7 +27,10 @@ type printerStats struct {
 }
 
 func getSortedCounters(fMap *map[string]int, fName string, lastCounters *[]map[string]int64) (ss []sortedCounters) {
+	countersSlice.RLock()
 	r := countersSlice.counters[(*fMap)[fName]]
+	countersSlice.RUnlock()
+
 	var counters []sortedCounters
 
 	// Sort
