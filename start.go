@@ -7,6 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"net/http"
 	_ "net/http/pprof" // For profiling
 
 	"github.com/hpcloud/tail"
@@ -18,6 +19,10 @@ func Start(outStream io.Writer) {
 	if err := ParseArgs(); err != nil {
 		log.Fatalf("Error parsing cmdline args: %s", err)
 	}
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 
 	go DumpCounters(outStream)
 

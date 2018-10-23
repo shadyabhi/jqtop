@@ -13,9 +13,6 @@ install:
     - go get github.com/rcrowley/go-metrics
 
 go:
-  - 1.8
-  - 1.9
-  # - 1.11 // go-arg has issues, should get rid of it. 
   - 1.11
   - tip
 
