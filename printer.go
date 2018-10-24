@@ -46,18 +46,16 @@ func getSortedCounters(fMap *map[string]int, fName string, lastCounters *[]map[s
 		return counters[i].Value > counters[j].Value
 	})
 
+	// Return asked subset
+	if len(counters) > Config.MaxResult {
+		counters = counters[:Config.MaxResult]
+	}
+
 	// Get percentages
 	for i := range counters {
 		counters[i].Percentage = float64(counters[i].Value) / total * 100
 	}
 
-	// Return subset if needed
-	if Config.MaxResult < 0 {
-		return counters
-	}
-	if len(counters) > Config.MaxResult {
-		return counters[:Config.MaxResult]
-	}
 	return counters
 }
 
@@ -65,7 +63,7 @@ func printCounters(out io.Writer, counters map[string][]sortedCounters, stats pr
 	if Config.Clearscreen {
 		fmt.Println("\033[H\033[2J")
 	}
-	fmt.Fprintf(out, "✖ Parse error rate: %d, CPU Usage: %.2f%%, Mem: %.2fMB, Processing Time: %s\n",
+	fmt.Fprintf(out, "✖ Parse error rate: %d, CPU Usage: %.2f%%, Mem(RSS): %.2fMB, Processing Time: %s\n",
 		parseErrors.Rate(), stats.sysinfo.CPU, stats.sysinfo.Memory/1024.0/1024.0, stats.timeElapsed)
 
 	for _, fieldName := range getFieldsInOrder(Config.Fields) {
@@ -102,7 +100,7 @@ func DumpCounters(out io.Writer) {
 	for range ticker.C {
 		now := time.Now()
 		stats := printerStats{}
-		sysinfo, _ := getCPUUsage()
+		sysinfo, _ := getResUsage()
 		stats.sysinfo = sysinfo
 
 		counters := make(map[string][]sortedCounters)
@@ -124,7 +122,7 @@ func initLastCounters(counters *[]map[string]int64, allFields Fields) {
 	}
 }
 
-func getCPUUsage() (sysInfo *pidusage.SysInfo, err error) {
+func getResUsage() (sysInfo *pidusage.SysInfo, err error) {
 	sysInfo, err = pidusage.GetStat(os.Getpid())
 	if err != nil {
 		return &pidusage.SysInfo{}, errors.Wrap(err, "Error getting CPU usage")

@@ -225,6 +225,7 @@ func deriveValue(f *derivedField, origValue string) (string, error) {
 func processValues(values map[string]string, allFields *Fields) {
 	for field, value := range values {
 		// Increment new counter
+		// These counters keep getting added, for now, we don't clear them
 		countersSlice.counters[allFields.FieldsIndexMap[field]].GetOrRegister(
 			value, metrics.NewCounter).(*metrics.StandardCounter).Inc(1)
 
