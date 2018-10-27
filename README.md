@@ -5,19 +5,19 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/shadyabhi/jqtop)](https://goreportcard.com/report/github.com/shadyabhi/jqtop)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/shadyabhi/jqtop)
 
-   * [jqtop](#jqtop)
-      * [Installation](#installation)
-      * [What does it do?](#what-does-it-do)
-      * [Short tutorial](#short-tutorial)
-         * [Existing Fields](#existing-fields)
-            * [Get stats for unique "requests" being made](#get-stats-for-unique-requests-being-made)
-         * [Derived Fields](#derived-fields)
-            * [Get stats on various HTTP methods being hit](#get-stats-on-various-http-methods-being-hit)
-         * [Show stats for multiple fields](#show-stats-for-multiple-fields)
-         * [Filtering](#filtering)
-            * [Show top paths with http method as POST.](#show-top-paths-with-http-method-as-post)
-      * [Benchmarks](#benchmarks)
-            
+* [jqtop](#jqtop)
+  * [Installation](#installation)
+  * [What does it do?](#what-does-it-do)
+  * [Short tutorial](#short-tutorial)
+    * [Existing Fields](#existing-fields)
+      * [Get stats for unique "requests" being made](#get-stats-for-unique-requests-being-made)
+    * [Derived Fields](#derived-fields)
+      * [Get stats on various HTTP methods being hit](#get-stats-on-various-http-methods-being-hit)
+    * [Show stats for multiple fields](#show-stats-for-multiple-fields)
+    * [Filtering](#filtering)
+      * [Show top paths with http method as POST.](#show-top-paths-with-http-method-as-post)
+  * [Benchmarks](#benchmarks)
+
 # jqtop
 
 jqtop is a tool to analyze json logs or equivalent stream of inputs in realtime.
@@ -52,7 +52,7 @@ go get github.com/shadyabhi/jqtop/cmd/jqtop
 **We can answer questions like**:-
 
 * Stats for `request`.
-* Stats for `derived fields` like `http_method` using `request` field. 
+* Stats for `derived fields` like `http_method` using `request` field.
 * Filter lines that should be processed for stats
 
 **For the impatient folks, here's a sample usage:-**
@@ -204,6 +204,6 @@ $ ./jqtop -file ./logfile --fields 'paths = regex_capture(request, "[A-Z]+? (.*?
 
 # Benchmarks
 
-I'm keeping a history of benchmarks as reference. 
+I'm keeping a history of benchmarks as reference.
 
 https://github.com/shadyabhi/jqtop/wiki/Benchmark-log
