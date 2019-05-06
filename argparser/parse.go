@@ -70,7 +70,7 @@ func ParseFields(s string) (*FieldExprs, error) {
 		&FieldExprs{},
 		participle.Lexer(customLexer),
 		participle.Unquote("String"),
-		participle.UseLookahead(),
+		participle.UseLookahead(10),
 	)
 	if err != nil {
 		return &FieldExprs{}, err
