@@ -24,13 +24,15 @@ func Start(outStream io.Writer) {
 		log.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
 
+	go DumpCounters(outStream)
+
 	linesChan := make(chan *tail.Line)
+
 	if err := setLinesChan(Config.File, linesChan); err != nil {
 		log.Fatalf("Error reading lines, exiting with error: %s", err)
 	}
-	go ProcessLines(linesChan)
 
-	DumpCounters(outStream, Config.Iter)
+	ProcessLines(linesChan)
 }
 
 func setLinesChan(filepath string, linesChan chan *tail.Line) (err error) {

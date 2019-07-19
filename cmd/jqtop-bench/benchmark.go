@@ -33,7 +33,7 @@ func BenchmarkJqtop(b *testing.B) {
 	// Setup DumpCounters goroutine
 	buf := make([]byte, 1000)
 	outStream := bytes.NewBuffer(buf)
-	go jqtop.DumpCounters(outStream, 0)
+	go jqtop.DumpCounters(outStream)
 
 	benchArgs := make([][]string, 0)
 	benchArgs = [][]string{

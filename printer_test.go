@@ -46,29 +46,3 @@ func Test_getSortedCounters(t *testing.T) {
 		t.Errorf("Sorted counters returned have wrong order, returned: %#v, expected: %#v", ss, expected)
 	}
 }
-
-func Test_shouldBreakLoop(t *testing.T) {
-	type intwrap struct {
-		x int
-	}
-
-	type args struct {
-		n     *int
-		total int
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{"noloop", args{&(&intwrap{0}).x, 10}, false},
-		{"breakloop", args{&(&intwrap{11}).x, 10}, true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := shouldBreakLoop(tt.args.n, tt.args.total); got != tt.want {
-				t.Errorf("shouldBreakLoop() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
