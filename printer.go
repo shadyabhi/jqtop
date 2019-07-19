@@ -79,7 +79,7 @@ func printCounters(out io.Writer, counters map[string][]sortedCounters, stats pr
 
 // DumpCounters is a function to print stats to io.Writer
 // nil io.Write is stdout
-func DumpCounters(out io.Writer) {
+func DumpCounters(out io.Writer, totalIter int) {
 	if out == nil {
 		out = os.Stdout
 	}
@@ -96,8 +96,15 @@ func DumpCounters(out io.Writer) {
 	var lastCounters []map[string]int64
 	initLastCounters(&lastCounters, allFields)
 
+	// Keep track of iteractions
+	var curIter int
+
 	ticker := time.NewTicker(time.Millisecond * time.Duration(Config.Interval))
 	for range ticker.C {
+		if shouldBreakLoop(&curIter, totalIter) {
+			break
+		}
+
 		now := time.Now()
 		stats := printerStats{}
 		sysinfo, _ := getResUsage()
@@ -113,6 +120,18 @@ func DumpCounters(out io.Writer) {
 		stats.timeElapsed = timeElapsed
 		printCounters(out, counters, stats)
 	}
+}
+
+func shouldBreakLoop(n *int, total int) bool {
+	if total == 0 {
+		return false
+	}
+
+	*n = *n + 1
+	if *n > total {
+		return true
+	}
+	return false
 }
 
 func initLastCounters(counters *[]map[string]int64, allFields Fields) {
