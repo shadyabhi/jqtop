@@ -68,14 +68,14 @@ func printCounters(out io.Writer, counters map[string][]sortedCounters, stats pr
 		fmt.Println("\033[H\033[2J")
 	}
 
-	totalCounters := 0
+	var totalCounters int64
 	for _, fieldName := range getFieldsInOrder(Config.Fields) {
 		fmt.Fprintf(out, "➤ %s\n", fieldName)
 		indent := "└──"
 		for _, counterData := range counters[fieldName] {
 			fmt.Fprintf(out, "%s %4s [%.1f%%]: %s\n",
 				indent, strconv.FormatInt(counterData.Value, 10), counterData.Percentage, counterData.Name)
-			totalCounters = totalCounters + 1
+			totalCounters = totalCounters + counterData.Value
 		}
 		fmt.Fprintln(out, "")
 	}
