@@ -79,7 +79,7 @@ func printCounters(out io.Writer, counters map[string][]sortedCounters, stats pr
 		}
 		fmt.Fprintln(out, "")
 	}
-	fmt.Fprintf(out, "\n✖ Parse error rate: %d, CPU Usage: %.2f%%, Mem(RSS): %.2fMB, Processing Time: %s, Total Distinct counters: %d\n",
+	fmt.Fprintf(out, "\n✖ Parse error rate: %d, CPU: %.2f%%, Mem(RSS): %.2fMB, Took: %s, Counters: %d\n",
 		parseErrors.Rate(), stats.sysinfo.CPU, stats.sysinfo.Memory/1024.0/1024.0, stats.timeElapsed, totalCounters)
 }
 
