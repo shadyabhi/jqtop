@@ -48,6 +48,7 @@ func Test_getSortedCounters(t *testing.T) {
 }
 
 func Test_shouldBreakLoop(t *testing.T) {
+	// Hack to take address of literal for test input
 	type intwrap struct {
 		x int
 	}
