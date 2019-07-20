@@ -54,10 +54,10 @@ func getSortedCounters(fMap *map[string]int, fName string, lastCounters *[]map[s
 	// Get percentages
 	for i := range counters {
 		if counters[i].Value != 0 {
-		counters[i].Percentage = float64(counters[i].Value) / total * 100
+			counters[i].Percentage = float64(counters[i].Value) / total * 100
 		} else {
 			counters[i].Percentage = 0
-	}
+		}
 	}
 
 	return counters
@@ -67,18 +67,20 @@ func printCounters(out io.Writer, counters map[string][]sortedCounters, stats pr
 	if Config.Clearscreen {
 		fmt.Println("\033[H\033[2J")
 	}
-	fmt.Fprintf(out, "✖ Parse error rate: %d, CPU Usage: %.2f%%, Mem(RSS): %.2fMB, Processing Time: %s\n",
-		parseErrors.Rate(), stats.sysinfo.CPU, stats.sysinfo.Memory/1024.0/1024.0, stats.timeElapsed)
 
+	totalCounters := 0
 	for _, fieldName := range getFieldsInOrder(Config.Fields) {
 		fmt.Fprintf(out, "➤ %s\n", fieldName)
 		indent := "└──"
 		for _, counterData := range counters[fieldName] {
 			fmt.Fprintf(out, "%s %4s [%.1f%%]: %s\n",
 				indent, strconv.FormatInt(counterData.Value, 10), counterData.Percentage, counterData.Name)
+			totalCounters = totalCounters + 1
 		}
 		fmt.Fprintln(out, "")
 	}
+	fmt.Fprintf(out, "\n✖ Parse error rate: %d, CPU Usage: %.2f%%, Mem(RSS): %.2fMB, Processing Time: %s, Total Distinct counters: %d\n",
+		parseErrors.Rate(), stats.sysinfo.CPU, stats.sysinfo.Memory/1024.0/1024.0, stats.timeElapsed, totalCounters)
 }
 
 // DumpCounters is a function to print stats to io.Writer
@@ -116,7 +118,6 @@ func DumpCounters(out io.Writer, totalIter int) {
 
 		counters := make(map[string][]sortedCounters)
 		for _, fieldName := range getFieldsInOrder(Config.Fields) {
-			// ss := getSortedCounters(countersMap.counters[fieldName])
 			ss := getSortedCounters(&fMap, fieldName, &lastCounters)
 			counters[fieldName] = ss
 		}
