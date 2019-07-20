@@ -53,7 +53,11 @@ func getSortedCounters(fMap *map[string]int, fName string, lastCounters *[]map[s
 
 	// Get percentages
 	for i := range counters {
+		if counters[i].Value != 0 {
 		counters[i].Percentage = float64(counters[i].Value) / total * 100
+		} else {
+			counters[i].Percentage = 0
+	}
 	}
 
 	return counters
