@@ -207,3 +207,4 @@ $ ./jqtop -file ./logfile --fields 'paths = regex_capture(request, "[A-Z]+? (.*?
 I'm keeping a history of benchmarks as reference.
 
 https://github.com/shadyabhi/jqtop/wiki/Benchmark-log
+
