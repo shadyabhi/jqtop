@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	jqtop.Start(nil)
+	jqtop.StartCLI(nil)
 }

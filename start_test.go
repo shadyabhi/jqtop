@@ -122,7 +122,7 @@ func TestSetLinesChan(t *testing.T) {
 	}
 }
 
-func TestStart(t *testing.T) {
+func TestStartCLI(t *testing.T) {
 	os.Args = []string{"jtop", "--fields", "fname", "-i", "0.01"}
 
 	// Start json stream on stdin
@@ -131,7 +131,7 @@ func TestStart(t *testing.T) {
 	buf := make([]byte, 1000)
 	outStream := bytes.NewBuffer(buf)
 
-	go Start(outStream)
+	go StartCLI(outStream)
 
 	time.Sleep(15 * time.Millisecond)
 

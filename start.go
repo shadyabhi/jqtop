@@ -14,8 +14,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Start function is called from outside for default behavior
-func Start(outStream io.Writer) {
+// StartCLI function is called from outside for default behavior
+func StartCLI(outStream io.Writer) {
 	if err := ParseArgs(); err != nil {
 		log.Fatalf("Error parsing cmdline args: %s", err)
 	}
