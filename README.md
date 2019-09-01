@@ -1,6 +1,7 @@
 [![GitHub release](https://img.shields.io/github/tag/shadyabhi/jqtop.svg?label=latest)](https://github.com/shadyabhi/jqtop/releases)
 [![Built Status - CircleCI](https://circleci.com/gh/shadyabhi/jqtop.svg?style=svg)](https://circleci.com/gh/shadyabhi/jqtop)
 [![Build Status](https://travis-ci.org/shadyabhi/jqtop.png)](https://travis-ci.org/shadyabhi/jqtop)
+[![Actions Status](https://github.com/{owner}/{repo}/workflows/{workflow_name}/badge.svg)](https://github.com/{owner}/{repo}/actions)
 [![codecov](https://codecov.io/gh/shadyabhi/jqtop/branch/master/graph/badge.svg)](https://codecov.io/gh/shadyabhi/jqtop)
 [![Go Report Card](https://goreportcard.com/badge/github.com/shadyabhi/jqtop)](https://goreportcard.com/report/github.com/shadyabhi/jqtop)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/shadyabhi/jqtop)
