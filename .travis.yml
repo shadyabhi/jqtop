@@ -13,6 +13,8 @@ install:
     - go get github.com/rcrowley/go-metrics
 
 go:
+  - 1.13
+  - 1.14
   - 1.15
   - tip
 
