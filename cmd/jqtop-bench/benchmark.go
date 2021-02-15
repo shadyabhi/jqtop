@@ -35,8 +35,7 @@ func BenchmarkJqtop(b *testing.B) {
 	outStream := bytes.NewBuffer(buf)
 	go jqtop.DumpCounters(outStream, 0)
 
-	benchArgs := make([][]string, 0)
-	benchArgs = [][]string{
+	benchArgs := [][]string{
 		{"1", "field_doesnt_exist", "", "Parse non-existent field"},
 		{"1", "domain", "", "Parse one simple field"},
 		{"1", "domain", "contains(domain, \".com\")", "Parse one simple field with basic filter (domain contains .com)"},
